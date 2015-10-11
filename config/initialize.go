@@ -1,0 +1,24 @@
+package config
+
+import (
+	"os"
+	"log"
+)
+
+// Check that we have required ENV variables to run the app
+// Add names of ENV variables to env[] slice as you add them
+// to your application logic.
+func CheckEnv() {
+
+	env := []string{
+		"DATABASE_URL",
+		"PORT",
+	}
+
+	for _, value := range env {
+		if os.Getenv(value) == "" {
+			log.Fatal("ENV variable not provided: " + value)
+		}
+	}
+
+}
