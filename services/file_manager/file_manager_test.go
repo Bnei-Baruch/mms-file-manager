@@ -5,10 +5,11 @@ import (
 	fm "github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
+	"errors"
+	"github.com/Bnei-Baruch/mms-file-manager/models"
 )
 
 var (
@@ -26,7 +27,7 @@ var _ = Describe("FileManager", func() {
 	watchFile2 := filepath.Join(watchDir2, "file2.txt")
 	targetFile2 := filepath.Join(targetDir2, "file2.txt")
 
-	Describe("Reading configuration", func() {
+	/*XDescribe("Reading configuration", func() {
 		It("returns an error if config file is not valid", func() {
 			data := []string{
 				`
@@ -63,7 +64,6 @@ aaa:
 				if _, err = file.WriteString(datum); err != nil {
 					Fail(fmt.Sprintf("Unable to write to temp config file: %v", err))
 				}
-
 
 				fileManager, err = fm.NewFM(file.Name())
 
@@ -131,7 +131,7 @@ watch:
 				return err
 			}, 3 * time.Second).ShouldNot(HaveOccurred())
 		})
-	})
+	})*/
 
 	Describe("Importing files", func() {
 
@@ -139,14 +139,22 @@ watch:
 
 			BeforeEach(func() {
 
-				if fileManager, err = fm.NewFM(); err != nil {
+				if fileManager, err = fm.NewFM(targetDir1); err != nil {
 					Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
 				}
+
 				if err = os.RemoveAll(watchDir1); err != nil {
 					Fail("Unable to remove watch dir")
 				}
 
 				if err = os.RemoveAll(targetDir1); err != nil {
+					Fail("Unable to remove target dir")
+				}
+				if err = os.RemoveAll(watchDir2); err != nil {
+					Fail("Unable to remove watch dir")
+				}
+
+				if err = os.RemoveAll(targetDir2); err != nil {
 					Fail("Unable to remove target dir")
 				}
 			})
@@ -214,6 +222,9 @@ watch:
 				fileManager.Watch(watchDir1, targetDir1)
 				l.Println("manager is watching")
 
+				watchFile2 := filepath.Join(watchDir1, "file2.txt")
+				targetFile2 := filepath.Join(targetDir1, "file2.txt")
+
 				createTestFile(watchFile1)
 				createTestFile(watchFile2)
 
@@ -228,37 +239,16 @@ watch:
 				}, 3 * time.Second).ShouldNot(HaveOccurred())
 			})
 
-			//TODO: Implement test (check with Gorodetsky what should be the logic)
-			XIt("must not copy same file to target dir", func() {
-
-				fileManager.Watch(watchDir1, targetDir1)
-				l.Println("manager is watching")
-
-				createTestFile(watchFile1)
-
-
-				Eventually(func() error {
-					_, err := os.Stat(targetFile1)
-					return err
-				}, 3 * time.Second).ShouldNot(HaveOccurred())
-
-				createTestFile(watchFile1)
-				Eventually(func() error {
-					_, err := os.Stat(targetFile2)
-					return err
-				}, 3 * time.Second).ShouldNot(HaveOccurred())
-			})
-
 		})
 
 		Context("Having two file managers", func() {
 
 			BeforeEach(func() {
 
-				if fileManager, err = fm.NewFM(); err != nil {
+				if fileManager, err = fm.NewFM(targetDir1); err != nil {
 					Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
 				}
-				if fileManager2, err = fm.NewFM(); err != nil {
+				if fileManager2, err = fm.NewFM(targetDir2); err != nil {
 					Fail(fmt.Sprintf("Unable to initialize FileManager2: %v", err))
 				}
 
@@ -302,15 +292,13 @@ watch:
 				fileManager2 = nil
 
 
-				if fileManager, err = fm.NewFM(); err != nil {
+				if fileManager, err = fm.NewFM(targetDir1, fm.WatchPair{watchDir1, "fm1"}); err != nil {
 					Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
 				}
-				if fileManager2, err = fm.NewFM(); err != nil {
+				if fileManager2, err = fm.NewFM(targetDir2, fm.WatchPair{watchDir2, "fm2"}); err != nil {
 					Fail(fmt.Sprintf("Unable to initialize FileManager2: %v", err))
 				}
 
-				fileManager.Watch(watchDir1, targetDir1)
-				fileManager2.Watch(watchDir2, targetDir2)
 				createTestFile(watchFile1)
 				createTestFile(watchFile2)
 
@@ -325,12 +313,136 @@ watch:
 				}, 3 * time.Second).ShouldNot(HaveOccurred())
 			})
 		})
+
+		Context("copying mone than once the same file to the same dir", func() {
+			//TODO: Implement test (check with Gorodetsky what should be the logic)
+			XIt("the second file must be put in a subfolder", func() {
+
+				fileManager.Watch(watchDir1, targetDir1)
+				l.Println("manager is watching")
+
+				createTestFile(watchFile1)
+
+
+				Eventually(func() error {
+					_, err := os.Stat(targetFile1)
+					return err
+				}, 3 * time.Second).ShouldNot(HaveOccurred())
+
+				createTestFile(watchFile1)
+				Eventually(func() error {
+					_, err := os.Stat(targetFile2)
+					return err
+				}, 3 * time.Second).ShouldNot(HaveOccurred())
+			})
+
+		})
+	})
+
+	Describe("Support handlers", func() {
+		BeforeEach(func() {
+
+			if fileManager, err = fm.NewFM(targetDir1); err != nil {
+				Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
+			}
+			if err = os.RemoveAll(watchDir1); err != nil {
+				Fail("Unable to remove watch dir")
+			}
+
+			if err = os.RemoveAll(targetDir1); err != nil {
+				Fail("Unable to remove target dir")
+			}
+		})
+
+		AfterEach(func() {
+			fileManager.Destroy()
+			fileManager = nil
+		})
+
+		It("registers handlers and calls them", func() {
+			handlerWasCalled := false
+
+			handler := func(file *models.File) (err error) {
+				handlerWasCalled = true
+				return
+			}
+
+			fileManager.Register(handler)
+			fileManager.Watch(watchDir1, targetDir1)
+			createTestFile(watchFile1)
+
+			Eventually(func() bool {
+				return handlerWasCalled
+			}, 3 * time.Second).Should(BeTrue())
+		})
+
+		It("calls handler with proper params", func() {
+			handlerWasCalled := ""
+
+			handler := func(file *models.File) (err error) {
+				handlerWasCalled = file.SourcePath + " " + file.TargetDir
+				return
+			}
+
+			fileManager.Register(handler)
+			fileManager.Watch(watchDir1, targetDir1)
+			createTestFile(watchFile1)
+
+			Eventually(func() bool {
+				return handlerWasCalled == watchFile1 + " " + targetDir1
+			}, 3 * time.Second).Should(BeTrue())
+		})
+
+		It("calls more than one handler", func() {
+			handlersCalled := 0
+
+			handler1 := func(file *models.File) (err error) {
+				handlersCalled ++
+				return
+			}
+
+			handler2 := func(file *models.File) (err error) {
+				handlersCalled ++
+				return
+			}
+
+			fileManager.Register(handler1, handler2)
+
+			fileManager.Watch(watchDir1, targetDir1)
+			createTestFile(watchFile1)
+
+			Eventually(func() bool {
+				return handlersCalled == 2
+			}, 3 * time.Second).Should(BeTrue())
+
+		})
+		It("calls handlers until error", func() {
+			handlersCalled := false
+
+			handler1 := func(file *models.File) (err error) {
+				return errors.New("new error")
+			}
+
+			handler2 := func(file *models.File) (err error) {
+				handlersCalled = true
+				return
+			}
+
+			fileManager.Register(handler1, handler2)
+			fileManager.Watch(watchDir1, targetDir1)
+			createTestFile(watchFile1)
+
+			Consistently(func() bool {
+				return handlersCalled
+			}, 3 * time.Second).Should(BeFalse())
+
+		})
 	})
 
 	XDescribe("Database Integrity", func() {
 		BeforeEach(func() {
 
-			if fileManager, err = fm.NewFM(); err != nil {
+			if fileManager, err = fm.NewFM(targetDir1); err != nil {
 				Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
 			}
 			if err = os.RemoveAll(watchDir1); err != nil {

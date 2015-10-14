@@ -1,19 +1,33 @@
 package file_manager
 
-import (
+import
+(
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	"fmt"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
+	"github.com/Bnei-Baruch/mms-file-manager/models"
 )
 
 type updateMsg struct {
-	file, targetDir string
+	filePath, label string
+}
+
+type FileManager struct {
+	updates         chan updateMsg
+	done            chan bool
+	handlers        []handlerFunc
+	TargetDirPrefix string
+}
+
+type handlerFunc func(*models.File) error
+
+type WatchPair struct {
+	WatchDir string
+	Label    string
 }
 
 var (
@@ -24,14 +38,6 @@ var (
 	l *log.Logger = nil
 )
 
-type FileManager struct {
-	updates chan updateMsg
-	done    chan bool
-}
-
-type watchPair map[string]string
-type watchPairs []watchPair
-
 func Logger(params *logger.LogParams) {
 	l = logger.InitLogger(params)
 }
@@ -40,16 +46,35 @@ func init() {
 	watchDirCacher.cache = make(map[string]*FileManager)
 }
 
+
+/*
+*  We are expecting the following structure of configuration file:
+*  watch:
+*    target: target_dir
+*    sources:
+*      - source: dir1
+*      - label: label_name1
+*      - source: dir2
+*      - label: label_name2
+*/
+
 /*
  * 1. Initialize File manager.
  * 2. Starts watching files if config is supplied.
  */
-func NewFM(configFile ...interface{}) (fm *FileManager, err error) {
+func NewFM(targetDirPrefix string, watches ...WatchPair) (fm *FileManager, err error) {
 	fm = &FileManager{
 		updates:  make(chan updateMsg, 1),
 		done:     make(chan bool),
+		TargetDirPrefix: targetDirPrefix,
 	}
-	fm.stateMonitor()
+
+	if err = os.MkdirAll(fm.TargetDirPrefix, os.ModePerm); err != nil {
+		return
+	}
+
+	fm.Register(registrationHandler)
+	fm.handleNewFiles()
 
 	// this will recover all panic and destroy appropriate assets
 	defer func() {
@@ -65,42 +90,16 @@ func NewFM(configFile ...interface{}) (fm *FileManager, err error) {
 		l = logger.InitLogger(&logger.LogParams{LogPrefix: "[FM] "})
 	}
 
-	if configFile != nil {
-		if watch, err := readConfigFile(configFile[0]); err != nil {
-			panic(fmt.Errorf("unable to read config file: %v", err))
-		} else {
-			if watch == nil {
-				panic(fmt.Errorf("%q key not found in config file", "watch"))
-			}
-			for _, pair := range watch {
-				l.Println("Starting to watch: ", pair["source"], pair["target"])
-				if err := fm.Watch(pair["source"], pair["target"]); err != nil {
-					panic(fmt.Errorf("unable to watch %q: %v", pair["source"], err))
-				}
-			}
+	for _, pair := range watches {
+		watchDir := pair.WatchDir
+		label := pair.Label
+		l.Printf("Starting to watch: %q, label: %s\n", watchDir, label)
+		if err := fm.Watch(watchDir, label); err != nil {
+			panic(fmt.Errorf("unable to watch %q: %v", watchDir, err))
 		}
-
 	}
+
 	return
-}
-
-func readConfigFile(configFile interface{}) (watch watchPairs, err error) {
-	yml := make(map[string]watchPairs)
-	l.Println("Reading custom configuration file", configFile)
-	if configFileName, ok := configFile.(string); ok {
-		var file []byte
-
-		if file, err = ioutil.ReadFile(configFileName); err != nil {
-			return nil, err
-		}
-		if err = yaml.Unmarshal(file, &yml); err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, fmt.Errorf("File name should be string")
-	}
-
-	return yml["watch"], nil
 }
 
 func (fm *FileManager) Destroy() {
@@ -115,7 +114,13 @@ func (fm *FileManager) Destroy() {
 	}
 }
 
-func (fm *FileManager) Watch(watchDir, targetDir string) error {
+func (fm *FileManager) Register(handlers ...handlerFunc) {
+	for _, f := range handlers {
+		fm.handlers = append(fm.handlers, f)
+	}
+}
+
+func (fm *FileManager) Watch(watchDir, label string) error {
 	watchDirCacher.Lock()
 	defer watchDirCacher.Unlock()
 
@@ -129,14 +134,12 @@ func (fm *FileManager) Watch(watchDir, targetDir string) error {
 		return err
 	}
 
-	if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
-		return err
-	}
-	go fm.watch(watchDir, targetDir)
+	go fm.watch(watchDir, label)
 	return nil
 }
 
-func (fm *FileManager) stateMonitor() {
+// watching for "new files" messages and handling them.
+func (fm *FileManager) handleNewFiles() {
 	var fc struct {
 		sync.Mutex
 		cache map[string]updateMsg
@@ -150,16 +153,17 @@ func (fm *FileManager) stateMonitor() {
 		for {
 			select {
 			case <-fm.done:
-				l.Println("Exiting stateMonitor")
+				l.Println("Exiting new files handler")
 				wg.Wait()
 				return
 			case u := <-fm.updates:
-				if _, ok := fc.cache[u.file]; !ok {
-					fc.cache[u.file] = u
+			// Don't handle files that are already in cache, i.e. are handled already
+				if _, ok := fc.cache[u.filePath]; !ok {
+					fc.cache[u.filePath] = u
 					wg.Add(1)
-					l.Println("Initializing handlers for: ", u.file)
+					l.Println("Initializing handlers for: ", u.filePath)
 					go func() {
-						defer delete(fc.cache, u.file)
+						defer delete(fc.cache, u.filePath)
 						defer wg.Done()
 						fm.handler(u)
 					}()
@@ -170,12 +174,7 @@ func (fm *FileManager) stateMonitor() {
 }
 
 
-func (fm *FileManager) handler(u updateMsg) {
-	fileName := filepath.Base(u.file)
-	os.Rename(u.file, filepath.Join(u.targetDir, fileName))
-}
-
-func (fm *FileManager) watch(watchDir, targetDir string) {
+func (fm *FileManager) watch(watchDir, label string) {
 	for {
 		select {
 		case <-fm.done:
@@ -184,7 +183,7 @@ func (fm *FileManager) watch(watchDir, targetDir string) {
 		default:
 			filepath.Walk(watchDir, func(path string, info os.FileInfo, err error) error {
 				if info != nil && info.Mode().IsRegular() {
-					fm.updates <- updateMsg{path, targetDir}
+					fm.updates <- updateMsg{path, label}
 				}
 
 				return nil

@@ -15,13 +15,12 @@ func main() {
 
 	file_manager.Logger(&logger.LogParams{LogMode: "screen", LogPrefix: "[FM] "})
 
-	fm, err := file_manager.NewFM()
+	fm, err := file_manager.NewFM(targetDir, file_manager.WatchPair{watchDir, "main"})
 	if err != nil {
 		panic(err)
 	}
 	defer fm.Destroy()
 
-	fm.Watch(watchDir, targetDir)
 	app.Negroni.Run(":" + os.Getenv("PORT"))
 
 }

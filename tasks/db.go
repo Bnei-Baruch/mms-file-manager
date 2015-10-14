@@ -14,9 +14,14 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	"time"
 	"path/filepath"
+	"github.com/Bnei-Baruch/mms-file-manager/config"
+	"github.com/Bnei-Baruch/mms-file-manager/models"
 )
 
-var l *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[TASK-DB] "})
+var (
+	l *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[TASK-DB] "})
+	env *string
+)
 
 
 func SetupEnv(env *string) error {
@@ -50,6 +55,7 @@ var DBGenerate = gofer.Register(gofer.Task{
 		flags := flag.NewFlagSet("goferFlags", flagErr)
 
 		env := flags.String("env", ".env", "environment")
+
 		if loadError := SetupEnv(env); loadError != nil {
 			l.Println("env file does not exist: ", env)
 		}
@@ -95,13 +101,35 @@ var DBGenerate = gofer.Register(gofer.Task{
 		return nil
 	},
 })
+var DBAutoMigrate = gofer.Register(gofer.Task{
+	Namespace:   "db",
+	Label:       "automigrate",
+	Description: "Auto Migrates a database with gorm",
+	Action: func(arguments ...string) error {
+
+		if env == nil {
+			env = flag.String("env", ".env", "environment")
+		}
+		if loadError := SetupEnv(env); loadError != nil {
+			l.Println("env file does not exist: ", env)
+		}
+		db := config.NewDB()
+
+		db.AutoMigrate(&models.File{})
+
+		return nil
+	},
+})
 var DBMigrate = gofer.Register(gofer.Task{
 	Namespace:   "db",
 	Label:       "migrate",
+	Dependencies: []string{"db:automigrate"},
 	Description: "Migrates a database",
 	Action: func(arguments ...string) error {
 
-		env := flag.String("env", ".env", "environment")
+		if env == nil {
+			env = flag.String("env", ".env", "environment")
+		}
 		if loadError := SetupEnv(env); loadError != nil {
 			l.Println("env file does not exist: ", env)
 		}
