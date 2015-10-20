@@ -5,11 +5,13 @@ import (
 	"time"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/utils"
+	"strconv"
 )
 
 func (fm *FileManager) handler(u updateMsg) {
 	targetDir := fm.TargetDir()
 	if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
+		l.Println("####################### Unable to create directory:", targetDir, " ERROR: ", err)
 		return
 	}
 
@@ -30,17 +32,16 @@ func (fm *FileManager) handler(u updateMsg) {
 }
 
 func registrationHandler(file *models.File) (error) {
-// check if present in DB
-//	if not just add file record and rename + move file
-//	if present
-//	1. if file exist create second version
-//	2. if file doesn't exist - rename + move file
-	fileName := file.FileName
-	os.Rename(file.SourcePath, filepath.Join(file.TargetDir, fileName))
+	// check if present in DB
+	//	if not just add file record and rename + move file
+	//	if present
+	//	1. if file exist create second version
+	//	2. if file doesn't exist - rename + move file
+	os.Rename(file.SourcePath, filepath.Join(file.TargetDir, file.FileName))
 	return nil
 }
 
 func (fm *FileManager) TargetDir() string {
 	year, week := time.Now().ISOWeek()
-	return filepath.Join(fm.TargetDirPrefix, string(year), string(week))
+	return filepath.Join(fm.TargetDirPrefix, strconv.Itoa(year), strconv.Itoa(week))
 }

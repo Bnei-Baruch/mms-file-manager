@@ -48,5 +48,5 @@ func InitLogger(params *LogParams) *log.Logger {
 		out = ioutil.Discard
 	}
 
-	return log.New(out, params.LogPrefix, log.Lshortfile)
+	return log.New(out, params.LogPrefix, log.Lshortfile | log.Ltime)
 }

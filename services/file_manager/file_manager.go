@@ -44,6 +44,7 @@ func Logger(params *logger.LogParams) {
 
 func init() {
 	watchDirCacher.cache = make(map[string]*FileManager)
+	l = logger.InitLogger(&logger.LogParams{LogPrefix: "[FM] "})
 }
 
 
@@ -84,11 +85,6 @@ func NewFM(targetDirPrefix string, watches ...WatchPair) (fm *FileManager, err e
 			fm = nil
 		}
 	}()
-
-	//TODO: should do something with logger
-	if l == nil {
-		l = logger.InitLogger(&logger.LogParams{LogPrefix: "[FM] "})
-	}
 
 	for _, pair := range watches {
 		watchDir := pair.WatchDir
