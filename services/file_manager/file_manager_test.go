@@ -13,151 +13,14 @@ import (
 	"strings"
 )
 
-var (
-	fileManager  *fm.FileManager = nil
-	fileManager2 *fm.FileManager = nil
-	err error
-)
-
 var _ = Describe("FileManager", func() {
-	watchDir1, targetDir1 := "tmp/source1", "tmp/target1"
-	watchFile1 := filepath.Join(watchDir1, "file1.txt")
-	targetFile1 := filepath.Join(targetDir1, "*/*/file1.txt")
-
-	watchDir2, targetDir2 := "tmp/source2", "tmp/target2"
-	watchFile2 := filepath.Join(watchDir2, "file2.txt")
-	targetFile2 := filepath.Join(targetDir2, "*/*/file2.txt")
-
-	/*XDescribe("Reading configuration", func() {
-		It("returns an error if config file is not valid", func() {
-			data := []string{
-				`
-# bad source key
-watch:
-  - soce: 'tmp/source1'
-    target: 'tmp/target1'
-  - source: 'tmp/source2'
-    target: 'tmp/target2'
-`,
-				`
-# no watch key
-aaa:
-  - soce: 'tmp/source1'
-    target: 'tmp/target1'
-  - source: 'tmp/source2'
-    target: 'tmp/target2'
-`,
-				`
-# generaly bad yaml
-  - soce: 'tmp/source1'
-    target: 'tmp/target1'
-  - source: 'tmp/source2'
-    target: 'tmp/target2'
-`,
-			}
-
-			for _, datum := range data {
-				file, err := ioutil.TempFile("/tmp", "file_manager")
-				if err != nil {
-					Fail(fmt.Sprintf("Unable to create temp config file: %v", err))
-				}
-
-				if _, err = file.WriteString(datum); err != nil {
-					Fail(fmt.Sprintf("Unable to write to temp config file: %v", err))
-				}
-
-				fileManager, err = fm.NewFM(file.Name())
-
-				if fileManager != nil {
-					defer func() {
-						fileManager.Destroy()
-						fileManager = nil
-					}()
-				}
-
-				os.Remove(file.Name())
-
-				Ω(fileManager).Should(BeNil())
-				Ω(err).Should(HaveOccurred())
-			}
-		})
-		It("must watch directories from config", func() {
-
-			var data = `
-watch:
-  - source: 'tmp/source1'
-    target: 'tmp/target1'
-  - source: 'tmp/source2'
-    target: 'tmp/target2'
-`
-
-			file, err := ioutil.TempFile("/tmp", "file_manager")
-			if err != nil {
-				Fail(fmt.Sprintf("Unable to create temp config file: %v", err))
-			}
-
-			defer os.Remove(file.Name())
-
-			if _, err = file.WriteString(data); err != nil {
-				Fail(fmt.Sprintf("Unable to write to temp config file: %v", err))
-			}
-
-			if err = os.RemoveAll(targetDir1); err != nil {
-				Fail("Unable to remove target dir1")
-			}
-
-			if err = os.RemoveAll(targetDir2); err != nil {
-				Fail("Unable to remove target dir2")
-			}
-
-
-			if fileManager, err = fm.NewFM(file.Name()); err != nil {
-				Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
-			}
-			defer func() {
-				fileManager.Destroy()
-				fileManager = nil
-			}()
-
-			createTestFile(watchFile1)
-			createTestFile(watchFile2)
-
-			Eventually(func() error {
-				_, err = os.Stat(targetFile1)
-				return err
-			}, 3 * time.Second).ShouldNot(HaveOccurred())
-
-			Eventually(func() error {
-				_, err = os.Stat(targetFile2)
-				return err
-			}, 3 * time.Second).ShouldNot(HaveOccurred())
-		})
-	})*/
 
 	Describe("Importing files", func() {
 
 		Context("Having one file manager", func() {
 
 			BeforeEach(func() {
-
-				if err = os.RemoveAll(watchDir1); err != nil {
-					Fail("Unable to remove watch dir")
-				}
-
-				if err = os.RemoveAll(targetDir1); err != nil {
-					Fail("Unable to remove target dir")
-				}
-				if err = os.RemoveAll(watchDir2); err != nil {
-					Fail("Unable to remove watch dir")
-				}
-
-				if err = os.RemoveAll(targetDir2); err != nil {
-					Fail("Unable to remove target dir")
-				}
-
-				if fileManager, err = fm.NewFM(targetDir1); err != nil {
-					Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
-				}
+				initFileManager()
 			})
 
 			AfterEach(func() {
@@ -190,7 +53,7 @@ watch:
 				fileManager.Watch(watchDir1, "label")
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile1)
+					files, _ := filepath.Glob(targetFile1v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 			})
@@ -212,23 +75,23 @@ watch:
 				createTestFile(watchFile1)
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile1)
+					files, _ := filepath.Glob(targetFile1v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 			})
 
-			It("must copy 2 new files to target dir", func() {
+			It("must copy 2 new different files to target dir", func() {
 
 				fileManager.Watch(watchDir1, targetDir1)
 
 				watchFile2 := filepath.Join(watchDir1, "file2.txt")
-				targetFile2 := filepath.Join(targetDir1, "*/*/file2.txt")
+				targetFile2 := filepath.Join(targetDir1, "*/*/v01/file2.txt")
 
 				createTestFile(watchFile1)
 				createTestFile(watchFile2)
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile1)
+					files, _ := filepath.Glob(targetFile1v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 
@@ -243,21 +106,11 @@ watch:
 		Context("Having two file managers", func() {
 
 			BeforeEach(func() {
-
-				if fileManager, err = fm.NewFM(targetDir1); err != nil {
-					Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
-				}
+				initFileManager()
 				if fileManager2, err = fm.NewFM(targetDir2); err != nil {
 					Fail(fmt.Sprintf("Unable to initialize FileManager2: %v", err))
 				}
 
-				if err = os.RemoveAll(targetDir1); err != nil {
-					Fail("Unable to remove target dir1")
-				}
-
-				if err = os.RemoveAll(targetDir2); err != nil {
-					Fail("Unable to remove target dir2")
-				}
 			})
 
 			AfterEach(func() {
@@ -274,12 +127,12 @@ watch:
 				createTestFile(watchFile2)
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile1)
+					files, _ := filepath.Glob(targetFile1v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile2)
+					files, _ := filepath.Glob(targetFile2v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 			})
@@ -302,35 +155,41 @@ watch:
 				createTestFile(watchFile2)
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile1)
+					files, _ := filepath.Glob(targetFile1v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile2)
+					files, _ := filepath.Glob(targetFile2v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 			})
 		})
 
-		Context("copying mone than once the same file to the same dir", func() {
-			//TODO: Implement test (check with Gorodetsky what should be the logic)
-			XIt("the second file must be put in a subfolder", func() {
+		Context("copying more than once the same file to the same dir", func() {
+			BeforeEach(func() {
+				initFileManager()
+			})
 
-				fileManager.Watch(watchDir1, targetDir1)
-				l.Println("manager is watching")
+			AfterEach(func() {
+				fileManager.Destroy()
+				fileManager = nil
+			})
+			It("both files must be versioned", func() {
+
+				fileManager.Watch(watchDir1, "label")
 
 				createTestFile(watchFile1)
 
 
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile1)
+					files, _ := filepath.Glob(targetFile1v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 
 				createTestFile(watchFile1)
 				Eventually(func() []string {
-					files, _ := filepath.Glob(targetFile2)
+					files, _ := filepath.Glob(targetFile1v1)
 					return files
 				}, 3 * time.Second).ShouldNot(BeNil())
 			})
@@ -340,17 +199,7 @@ watch:
 
 	Describe("Support handlers", func() {
 		BeforeEach(func() {
-
-			if fileManager, err = fm.NewFM(targetDir1); err != nil {
-				Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
-			}
-			if err = os.RemoveAll(watchDir1); err != nil {
-				Fail("Unable to remove watch dir")
-			}
-
-			if err = os.RemoveAll(targetDir1); err != nil {
-				Fail("Unable to remove target dir")
-			}
+			initFileManager()
 		})
 
 		AfterEach(func() {
@@ -374,7 +223,7 @@ watch:
 				return handlerWasCalled
 			}, 3 * time.Second).Should(BeTrue())
 		})
-		
+
 		It("calls handler with proper params", func() {
 			handlerWasCalled := ""
 
@@ -441,18 +290,7 @@ watch:
 
 	Describe("Database Integrity", func() {
 		BeforeEach(func() {
-
-			if err = os.RemoveAll(watchDir1); err != nil {
-				Fail("Unable to remove watch dir")
-			}
-
-			if err = os.RemoveAll(targetDir1); err != nil {
-				Fail("Unable to remove target dir")
-			}
-
-			if fileManager, err = fm.NewFM(targetDir1); err != nil {
-				Fail(fmt.Sprintf("Unable to initialize FileManager: %v", err))
-			}
+			initFileManager()
 		})
 
 		AfterEach(func() {
@@ -460,35 +298,41 @@ watch:
 			fileManager = nil
 		})
 
-		It("must create only one record per path in db", func() {
-			/*
-						fileManager.Watch(watchDir1, targetDir1)
-						fileManager.Watch(watchDir2, targetDir2)
-						createTestFile(watchFile1)
-						watchFile2 = filepath.Join(watchDir2, "file1.txt")
-						createTestFile(watchFile2)
-						res, _ := r.DB(dbName).Table("files").Count().Run(session)
-						var cnt int
-						l.Println("@!@!@!@!@", res.One(&cnt))
-						res.Close()
-			*/
+		It("must create versions for the same file and version must increment by one", func() {
+			fileManager.Watch(watchDir1, "label")
+			createTestFile(watchFile1)
+
+			file := models.File{FileName: filepath.Base(watchFile1)}
+			Eventually(func() error {
+				return file.Load()
+			}, 3 * time.Second).ShouldNot(HaveOccurred())
+			Ω(file.Version).Should(Equal(int64(1)))
+
+			createTestFile(watchFile1)
+			file = models.File{FileName: filepath.Base(watchFile1), Version: 2}
+			Eventually(func() error {
+				return file.Load()
+			}, 3 * time.Second).ShouldNot(HaveOccurred())
 		})
+
 		It("must create a file record in db", func() {
-			fileManager.Watch(watchDir1, targetDir1)
+			fileManager.Watch(watchDir1, "label")
 
 			createTestFile(watchFile1)
 
 			//check that file is in db
-			/*
-						file, err := fileManager.FindOneFile(filepath.Base(watchFile1))
-						Ω(err).ShouldNot(HaveOccurred())
-						Ω(file).ShouldNot(BeNil())
-			*/
+			file := models.File{FileName: filepath.Base(watchFile1)}
+			Eventually(func() error {
+				return file.Load()
+			}, 3 * time.Second).ShouldNot(HaveOccurred())
+
+
 		})
 	})
 
-	XDescribe("Validating files", func() {
+	Describe("Validating files", func() {
 		XIt("must validate id3", func() {
+
 		})
 
 		XContext("When file is valid", func() {

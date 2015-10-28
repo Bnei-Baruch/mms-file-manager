@@ -16,19 +16,34 @@ import (
 	"path/filepath"
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"fmt"
 )
 
 var (
 	l *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[TASK-DB] "})
-	env *string
 )
 
 
-func SetupEnv(env *string) error {
-	if *env != "" {
-		return godotenv.Load(*env)
+func SetupArgs(arguments []string) (args []string, err error) {
+	var flagErr flag.ErrorHandling
+	flags := flag.NewFlagSet("goferFlags", flagErr)
+
+	env := flags.String("env", ".env", "environment")
+	if err = flags.Parse(arguments); err != nil {
+		return
 	}
-	return nil
+
+	if *env == "" {
+		return nil, fmt.Errorf("env should not be an empty string")
+	}
+	if err = godotenv.Load(*env); err != nil {
+		return
+	}
+	log.Println("env:", *env)
+
+	args = flags.Args()
+
+	return
 }
 
 func DBConnect() (*sql.DB, error) {
@@ -51,17 +66,10 @@ var DBGenerate = gofer.Register(gofer.Task{
 	Description: "Generate new migration",
 	Action: func(arguments ...string) error {
 
-		var flagErr flag.ErrorHandling
-		flags := flag.NewFlagSet("goferFlags", flagErr)
-
-		env := flags.String("env", ".env", "environment")
-
-		if loadError := SetupEnv(env); loadError != nil {
-			l.Println("env file does not exist: ", env)
+		args, err := SetupArgs(arguments)
+	    if err != nil {
+			l.Println("Problem with parameters ", err)
 		}
-
-		flags.Parse(arguments)
-		args := flags.Args()
 
 		dbConf := goose.DBConf{
 			MigrationsDir: "migrations",
@@ -69,7 +77,6 @@ var DBGenerate = gofer.Register(gofer.Task{
 			Driver: goose.DBDriver{
 				Name: "postgres",
 				OpenStr: "$DATABASE_URL",
-
 			},
 		}
 
@@ -107,17 +114,23 @@ var DBAutoMigrate = gofer.Register(gofer.Task{
 	Description: "Auto Migrates a database with gorm",
 	Action: func(arguments ...string) error {
 
-		if env == nil {
-			env = flag.String("env", ".env", "environment")
+		if _, err := SetupArgs(arguments); err != nil {
+			l.Println("Problem with parameters ", err)
 		}
-		if loadError := SetupEnv(env); loadError != nil {
-			l.Println("env file does not exist: ", env)
-		}
+
 		db := config.NewDB()
 
 		db.AutoMigrate(&models.File{})
 
 		return nil
+	},
+})
+var Kuku = gofer.Register(gofer.Task{
+	Namespace:   "kuku",
+	Label:       "muku",
+	Description: "Migrates a database",
+	Action: func(arguments ...string) error {
+		return gofer.LoadAndPerform("db:migrate", "--env=.env.test")
 	},
 })
 var DBMigrate = gofer.Register(gofer.Task{
@@ -127,19 +140,17 @@ var DBMigrate = gofer.Register(gofer.Task{
 	Description: "Migrates a database",
 	Action: func(arguments ...string) error {
 
-		if env == nil {
-			env = flag.String("env", ".env", "environment")
-		}
-		if loadError := SetupEnv(env); loadError != nil {
-			l.Println("env file does not exist: ", env)
+		if _, err := SetupArgs(arguments); err != nil {
+			l.Fatal("Problem with parameters ", err)
 		}
 
 		dbConf := goose.DBConf{
 			MigrationsDir: "migrations",
-			Env: "production",
+			Env: os.Getenv("ENV"),
 			Driver: goose.DBDriver{
 				Name: "postgres",
-				OpenStr: "$DATABASE_URL",
+				OpenStr: os.Getenv("DATABASE_URL"),
+				Dialect: goose.PostgresDialect{},
 
 			},
 		}
@@ -148,7 +159,6 @@ var DBMigrate = gofer.Register(gofer.Task{
 		if err != nil {
 			l.Fatal(err)
 		}
-
 		if err := goose.RunMigrations(&dbConf, dbConf.MigrationsDir, target); err != nil {
 			l.Fatal(err)
 		}

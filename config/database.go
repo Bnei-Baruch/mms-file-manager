@@ -4,7 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"os"
-	"fmt"
+	"log"
 )
 
 // Return a new gorm instance with a connection to the DB as specified
@@ -13,10 +13,10 @@ func NewDB() *gorm.DB {
 	db, err := gorm.Open("postgres", os.Getenv("DATABASE_URL"))
 
 	// Uncomment this to enable DB loggin
-	//db.LogMode(true)
+	db.LogMode(true)
 
 	if err != nil {
-		fmt.Printf("DB connection error: %v\n", err)
+		log.Fatalf("DB connection error: %v\n", err)
 	}
 
 	return &db

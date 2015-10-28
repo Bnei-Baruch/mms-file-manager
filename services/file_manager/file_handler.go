@@ -32,12 +32,14 @@ func (fm *FileManager) handler(u updateMsg) {
 }
 
 func registrationHandler(file *models.File) (error) {
-	// check if present in DB
-	//	if not just add file record and rename + move file
-	//	if present
-	//	1. if file exist create second version
-	//	2. if file doesn't exist - rename + move file
-	os.Rename(file.SourcePath, filepath.Join(file.TargetDir, file.FileName))
+	file.Save()
+	filePath := file.FilePath()
+	if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
+		l.Println("####################### Unable to create directory:", filePath, " ERROR: ", err)
+		return err
+	}
+
+	os.Rename(file.SourcePath, filepath.Join(filePath, file.FileName))
 	return nil
 }
 

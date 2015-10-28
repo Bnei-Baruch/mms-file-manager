@@ -5,33 +5,29 @@ package models
 // the contents of the .env.test file into the OS environment.
 
 import (
-  "github.com/Bnei-Baruch/mms-file-manager/config"
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
-  "github.com/joho/godotenv"
-  "testing"
-)
-
-var (
-  app *config.App
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/joho/godotenv"
+	"testing"
 )
 
 func TestTest(t *testing.T) {
-  RegisterFailHandler(Fail)
-  RunSpecs(t, "Test Suite")
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Test Suite")
 }
-
 var _ = BeforeSuite(func() {
-  
-  // Load test ENV variables
-  godotenv.Load("../.env.test")
 
-  // Create a new app
-  app = config.NewApp("../.")
+	// Load test ENV variables
+	godotenv.Load("../.env.test")
+
+	// Create a new db
+
+//	db := config.NewDB()
+//	New(db)
 })
 
 var _ = BeforeEach(func() {
-  // Reset the DB before every test
-  app.DB.Exec("DELETE FROM posts;")
-	app.DB.Exec("DELETE FROM files;")
+	// Reset the DB before every test
+//	db.Exec("DELETE FROM posts;")
+//	db.Exec("DELETE FROM files;")
 })

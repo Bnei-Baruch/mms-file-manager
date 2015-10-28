@@ -5,3 +5,5 @@ gin-bin
 .env
 .idea
 *.coverprofile
+tmp/
+runner.conf

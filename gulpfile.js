@@ -39,7 +39,7 @@ gulp.task("test", ["assets:compile"], function() {
 });
 
 gulp.task("watch", ["assets:compile"], function() {
-  gulp.src('').pipe(shell('ginkgo watch -noisyPendings=false -progress=true -randomizeAllSpecs=true -r=true -cover=true -v=true -trace=true'));
+  gulp.src('').pipe(shell('ginkgo watch -failFast=true -noisyPendings=false -progress=true -randomizeAllSpecs=true -r=true -cover=true -v=true -trace=true'));
 });
 
 // Production
