@@ -2,18 +2,18 @@ package routes
 
 import(
   "net/http"
-  "github.com/Bnei-Baruch/mms-file-manager/models"
+//  "github.com/Bnei-Baruch/mms-file-manager/models"
   "fmt"
 )
 
 func PostsIndex(w http.ResponseWriter, req *http.Request) {
   
   // Find all posts in the DB
-  posts := []models.Post{}
-  App.DB.Find(&posts)
+//  posts := []models.Post{}
+//  App.DB.Find(&posts)
 
   // Pass them to the templates for rendering
-  App.Render.HTML(w, 200, "posts/index", posts)
+//  App.Render.HTML(w, 200, "posts/index", posts)
 }
 
 func PostsNew(w http.ResponseWriter, req *http.Request) {
@@ -23,7 +23,7 @@ func PostsNew(w http.ResponseWriter, req *http.Request) {
 func PostsCreate(w http.ResponseWriter, req *http.Request) {
 
   // Create a new empty Post
-  post := new(models.Post)
+//  post := new(models.Post)
 
   // Parse form values
   err1 := req.ParseForm()
@@ -32,13 +32,13 @@ func PostsCreate(w http.ResponseWriter, req *http.Request) {
   }
 
   // decode form values into the post
-  err2 := decoder.Decode(post, req.PostForm)
-  if err2 != nil {
-    fmt.Println("Cannot decode to struct")
-  }
+//  err2 := decoder.Decode(post, req.PostForm)
+//  if err2 != nil {
+//    fmt.Println("Cannot decode to struct")
+//  }
 
   // create the post
-  App.DB.Create(post)
+//  App.DB.Create(post)
 
   // redirect to index page
   http.Redirect(w, req, "/posts", 302)

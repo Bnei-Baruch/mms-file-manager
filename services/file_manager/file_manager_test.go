@@ -307,12 +307,16 @@ var _ = Describe("FileManager", func() {
 				return file.Load()
 			}, 3 * time.Second).ShouldNot(HaveOccurred())
 			Ω(file.Version).Should(Equal(int64(1)))
+			files, _ := filepath.Glob(targetFile1v1)
+			Ω(files).NotTo(BeNil())
 
 			createTestFile(watchFile1)
 			file = models.File{FileName: filepath.Base(watchFile1), Version: 2}
 			Eventually(func() error {
 				return file.Load()
 			}, 3 * time.Second).ShouldNot(HaveOccurred())
+			files, _ = filepath.Glob(targetFile1v2)
+			Ω(files).NotTo(BeNil())
 		})
 
 		It("must create a file record in db", func() {

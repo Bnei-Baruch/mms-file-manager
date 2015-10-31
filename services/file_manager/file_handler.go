@@ -32,10 +32,14 @@ func (fm *FileManager) handler(u updateMsg) {
 }
 
 func registrationHandler(file *models.File) (error) {
-	file.Save()
+	file.Status = models.PENDING
+	if err := file.Save(); err != nil {
+		l.Println("Unable to save file:", file, " ERROR: ", err)
+		return err
+	}
 	filePath := file.FilePath()
 	if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
-		l.Println("####################### Unable to create directory:", filePath, " ERROR: ", err)
+		l.Println("Unable to create directory:", filePath, " ERROR: ", err)
 		return err
 	}
 

@@ -39,7 +39,6 @@ var _ = BeforeSuite(func() {
 
 var _ = BeforeEach(func() {
   // Reset the DB before every test
-  app.DB.Exec("DELETE FROM posts;")
 })
 
 // Function to make a HTTP request and serve the response from

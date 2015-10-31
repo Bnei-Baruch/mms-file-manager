@@ -28,6 +28,5 @@ var _ = BeforeSuite(func() {
 
 var _ = BeforeEach(func() {
 	// Reset the DB before every test
-//	db.Exec("DELETE FROM posts;")
 //	db.Exec("DELETE FROM files;")
 })

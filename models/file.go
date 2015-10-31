@@ -1,13 +1,23 @@
 package models
-import "fmt"
+import (
+"fmt"
+"database/sql/driver"
+	"errors"
+)
 
+type Status string
+
+const (
+	PENDING Status = "PENDING"
+	NEW = "NEW"
+)
 
 type File struct {
 	Model
 	TargetDir  string
 	FileName   string
-	Label      string           // incoming source of file (i.e. ingest, etc.)
-	Status     string
+	Label      string           // incoming source of file (i.e. ingest, etc.)
+	Status     Status `sql:"type:varchar(30)"`
 	Version    int64
 								//	Version string `sql:"index;type:varchar(100);unique" gorm:"column:kuku"`
 	SourcePath string `sql:"-"` //will be ignored in DB
@@ -34,4 +44,17 @@ func (f *File) Save() error {
 
 func (f *File) FilePath() string {
 	return fmt.Sprintf("%s/v%02d", f.TargetDir, f.Version)
+}
+
+func (u *Status) Scan(value interface{}) error {
+	asBytes, ok := value.([]byte)
+	if !ok {
+		return errors.New("Scan source is not []byte")
+	}
+	*u = Status(asBytes)
+	return nil
+}
+
+func (u Status) Value() (driver.Value, error) {
+	return string(u), nil
 }

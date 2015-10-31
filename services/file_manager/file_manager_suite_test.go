@@ -49,7 +49,7 @@ var _ = BeforeSuite(func() {
 	}
 	db = config.NewDB()
 	models.New(db)
-	fm.Logger(&logger.LogParams{LogMode: "screen", LogPrefix: "[FM] "})
+	//	fm.Logger(&logger.LogParams{LogMode: "screen", LogPrefix: "[FM] "})
 })
 
 var _ = AfterSuite(func() {
