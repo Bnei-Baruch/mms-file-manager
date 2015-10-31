@@ -17,7 +17,7 @@ before_install:
   - export DATABASE_URL=postgres://postgres@localhost:5432/mms_test?sslmode=disable
 
 before_script:
-  - brew services start postgresql
+  - pg_ctl -D /usr/local/var/postgres start
   - psql -c "select version();" -U postgres
   - psql -c 'SHOW SERVER_VERSION' -U postgres
   - psql -c 'create database mms_test;' -U postgres
