@@ -1,30 +1,23 @@
 language: go
-#os: osx
+
 go:
   - 1.5.1
 
 services:
   - postgresql
+
 addons:
   postgresql: "9.4"
 
-sudo: true
+sudo: false
 
 script: "go test ./..."
 
 before_install:
   - export PATH=$GOPATH/bin:$PATH
   - export DATABASE_URL=postgres://postgres@localhost:5432/mms_test?sslmode=disable
+  - export PORT=3000
+  - export ENV=test
 
 before_script:
-  #  - pg_ctl -D /usr/local/var/postgres start
-  - psql -c "select version();" -U postgres
-  - psql -c 'SHOW SERVER_VERSION' -U postgres
   - psql -c 'create database mms_test;' -U postgres
-
-#   - brew update && brew install rethinkdb
-#   - rethinkdb --daemon
-#  - source /etc/lsb-release && echo "deb http://download.rethinkdb.com/apt $DISTRIB_CODENAME main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
-#  - wget -qO- http://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add -
-#  - sudo apt-get update
-#  - sudo apt-get install rethinkdb
