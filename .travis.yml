@@ -5,6 +5,8 @@ go:
 
 services:
   - postgresql
+addons:
+  postgresql: "9.4"
 
 sudo: true
 
@@ -15,6 +17,8 @@ before_install:
   - export DATABASE_URL=postgres://postgres@localhost:5432/mms_test?sslmode=disable
 
 before_script:
+  - psql -c "select version();" -U postgres
+  - psql -c 'SHOW SERVER_VERSION' -U postgres
   - psql -c 'create database mms_test;' -U postgres
 
 #   - brew update && brew install rethinkdb
