@@ -7,3 +7,4 @@ gin-bin
 *.coverprofile
 tmp/
 runner.conf
+mms-file-manager

@@ -6,7 +6,6 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 	"os"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"github.com/Bnei-Baruch/mms-file-manager/models"
 )
 
 func main() {
