@@ -36,9 +36,9 @@ func SetupArgs(arguments []string) (args []string, err error) {
 	if *env == "" {
 		return nil, fmt.Errorf("env should not be an empty string")
 	}
-	if err = godotenv.Load(*env); err != nil {
-		return
-	}
+	godotenv.Load(*env)
+	config.CheckEnv()
+
 	log.Println("env:", *env)
 
 	args = flags.Args()
