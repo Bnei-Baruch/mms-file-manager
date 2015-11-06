@@ -11,13 +11,18 @@ addons:
 
 sudo: false
 
-script: "go test ./..."
+script:
+  - go test ./...
+  - $HOME/gopath/bin/goveralls -service=travis-ci
 
 before_install:
   - export PATH=$GOPATH/bin:$PATH
   - export DATABASE_URL=postgres://postgres@localhost:5432/mms_test?sslmode=disable
   - export PORT=3000
   - export ENV=test
+  - go get github.com/axw/gocov/gocov
+  - go get github.com/mattn/goveralls
+  - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 
 before_script:
   - psql -c 'create database mms_test;' -U postgres
