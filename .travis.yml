@@ -12,9 +12,9 @@ addons:
 sudo: false
 
 script:
-  #  - go test ./... -covermode=count -coverprofile=profile.cov
+  - go test ./...
   #  - $HOME/gopath/bin/ginkgo test -noisyPendings=false -randomizeAllSpecs=true -r=true -cover=true -v=true -trace=true
-  - $HOME/gopath/bin/goveralls -service=travis-ci
+  #  - $HOME/gopath/bin/goveralls -service=travis-ci
 
 before_install:
   - export PATH=$GOPATH/bin:$PATH
