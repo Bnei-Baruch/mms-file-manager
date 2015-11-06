@@ -12,7 +12,8 @@ addons:
 sudo: false
 
 script:
-  - go test ./...
+  #  - go test ./... -covermode=count -coverprofile=profile.cov
+  #  - $HOME/gopath/bin/ginkgo test -noisyPendings=false -randomizeAllSpecs=true -r=true -cover=true -v=true -trace=true
   - $HOME/gopath/bin/goveralls -service=travis-ci
 
 before_install:
@@ -20,6 +21,7 @@ before_install:
   - export DATABASE_URL=postgres://postgres@localhost:5432/mms_test?sslmode=disable
   - export PORT=3000
   - export ENV=test
+  #  - go get github.com/onsi/ginkgo
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - if ! go get github.com/golang/tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
