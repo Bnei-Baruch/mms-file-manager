@@ -6,9 +6,11 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 	"os"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load(".env")
 	app := config.NewApp(".")
 	routes.Setup(app)
 	watchDir, targetDir := "tmp/source", "tmp/target"

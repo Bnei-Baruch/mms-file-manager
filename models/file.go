@@ -1,15 +1,19 @@
 package models
 import (
-"fmt"
-"database/sql/driver"
+	"fmt"
+	"database/sql/driver"
 	"errors"
+	"database/sql"
 )
 
 type Status string
 
 const (
 	PENDING Status = "PENDING"
-	NEW = "NEW"
+	NEW Status = "NEW"
+	HAS_PATTERN Status = "HAS_PATTERN"
+	NO_PATTERN Status = "NO_PATTERN"
+	MANY_PATTERNS Status = "MANY_PATTERNS"
 )
 
 type File struct {
@@ -21,6 +25,8 @@ type File struct {
 	Version    int64
 								//	Version string `sql:"index;type:varchar(100);unique" gorm:"column:kuku"`
 	SourcePath string `sql:"-"` //will be ignored in DB
+	Pattern    Pattern
+	PatternId  sql.NullInt64 `sql:"index"`
 }
 
 func (f *File) Load() error {

@@ -4,7 +4,10 @@ gin-bin
 .env.test
 .env
 .idea
-*.coverprofile
+**/*.coverprofile
 tmp/
 runner.conf
 mms-file-manager
+.vscode
+debug
+**/*.cov

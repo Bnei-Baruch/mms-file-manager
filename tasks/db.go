@@ -39,8 +39,6 @@ func SetupArgs(arguments []string) (args []string, err error) {
 	godotenv.Load(*env)
 	config.CheckEnv()
 
-	log.Println("env:", *env)
-
 	args = flags.Args()
 
 	return
@@ -67,7 +65,7 @@ var DBGenerate = gofer.Register(gofer.Task{
 	Action: func(arguments ...string) error {
 
 		args, err := SetupArgs(arguments)
-	    if err != nil {
+		if err != nil {
 			l.Println("Problem with parameters ", err)
 		}
 
@@ -108,6 +106,30 @@ var DBGenerate = gofer.Register(gofer.Task{
 		return nil
 	},
 })
+var DBEmptyDB = gofer.Register(gofer.Task{
+	Namespace:   "db",
+	Label:       "empty",
+	Description: "Delete all tables from DB",
+	Action: func(arguments ...string) error {
+
+		if _, err := SetupArgs(arguments); err != nil {
+			l.Println("Problem with parameters ", err)
+		}
+
+		db := config.NewDB()
+
+		var err error
+		if err = db.Exec(`
+		DROP SCHEMA public CASCADE;
+		CREATE SCHEMA public;
+		`).Error; err != nil {
+			l.Fatal("Could not empty database.", err)
+		}
+
+		return err
+	},
+})
+
 var DBAutoMigrate = gofer.Register(gofer.Task{
 	Namespace:   "db",
 	Label:       "automigrate",
@@ -120,9 +142,16 @@ var DBAutoMigrate = gofer.Register(gofer.Task{
 
 		db := config.NewDB()
 
-		db.AutoMigrate(&models.File{})
+		var err error
+		if err = db.AutoMigrate(
+			&models.File{},
+			&models.Pattern{},
+			&models.PatternPart{},
+		).Error; err != nil {
+			l.Fatal("Could not automigrate.", err)
+		}
 
-		return nil
+		return err
 	},
 })
 var Kuku = gofer.Register(gofer.Task{
@@ -138,32 +167,33 @@ var DBMigrate = gofer.Register(gofer.Task{
 	Label:       "migrate",
 	Dependencies: []string{"db:automigrate"},
 	Description: "Migrates a database",
-	Action: func(arguments ...string) error {
+	Action: func(arguments ...string) (err error) {
 
-		if _, err := SetupArgs(arguments); err != nil {
+		if _, err = SetupArgs(arguments); err != nil {
 			l.Fatal("Problem with parameters ", err)
 		}
-
+		path := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/Bnei-Baruch/mms-file-manager/migrations")
 		dbConf := goose.DBConf{
-			MigrationsDir: "migrations",
+			MigrationsDir: path,
 			Env: os.Getenv("ENV"),
 			Driver: goose.DBDriver{
 				Name: "postgres",
 				OpenStr: os.Getenv("DATABASE_URL"),
 				Dialect: goose.PostgresDialect{},
-
+				Import: "github.com/lib/pq",
 			},
 		}
 
-		target, err := goose.GetMostRecentDBVersion(dbConf.MigrationsDir)
+		var target int64
+		target, err = goose.GetMostRecentDBVersion(dbConf.MigrationsDir)
 		if err != nil {
 			l.Fatal(err)
 		}
-		if err := goose.RunMigrations(&dbConf, dbConf.MigrationsDir, target); err != nil {
+		if err = goose.RunMigrations(&dbConf, dbConf.MigrationsDir, target); err != nil {
 			l.Fatal(err)
 		}
 
-		return nil
+		return
 	},
 })
 
