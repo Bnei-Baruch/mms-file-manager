@@ -2,12 +2,13 @@ package workflow_manager
 import (
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"database/sql"
+	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 )
 
-func AttachToPattern(file *models.File) (bool, error) {
+var AttachToPattern = file_manager.HandlerFunc(func(file *models.File) error {
 	patterns := models.Patterns{}
 	if err := patterns.FindAllByFileMatch(file.FileName); err != nil {
-		return false, err
+		return err
 	}
 
 	switch  len(patterns) {
@@ -27,5 +28,5 @@ func AttachToPattern(file *models.File) (bool, error) {
 		}
 	}
 
-	return file.Status == models.HAS_PATTERN, file.Save()
-}
+	return file.Save()
+})

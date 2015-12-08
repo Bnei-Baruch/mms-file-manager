@@ -1,8 +1,6 @@
 package models
 import (
 	"regexp"
-	"database/sql/driver"
-	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -15,25 +13,8 @@ type Pattern struct {
 	Regexp    RegularX `sql:"type:varchar(255);not null;unique"`
 	Extension string
 	Workflows []Workflow
-	Values    Values `sql:"type:jsonb"`
+	Parts     Pairs `sql:"type:jsonb"`
 }
-type Values []struct {
-	Key   string `json:"key"`
-	Value string `json:"value;omitempty"`
-}
-
-func (j Values) Value() (driver.Value, error) {
-	valueString, err := json.Marshal(j)
-	return string(valueString), err
-}
-
-func (j *Values) Scan(value interface{}) error {
-	if err := json.Unmarshal(value.([]byte), &j); err != nil {
-		return err
-	}
-	return nil
-}
-
 type Patterns []Pattern
 
 func (p *Pattern) FindOne() error {
@@ -57,9 +38,8 @@ func (ps *Patterns) FindAllByFileMatch(fileName string) error {
 	return db.Where("? ~ regexp", fileName).Order("priority desc").Find(ps).Error
 }
 
-
 func (p *Pattern) calculatePriorityField() {
-	for _, element := range p.Values {
+	for _, element := range p.Parts {
 		if element.Value != "" {
 			p.Priority += 1
 		}
@@ -69,7 +49,7 @@ func (p *Pattern) calculatePriorityField() {
 func (p *Pattern) calculateRegexField() error {
 	var parts []string
 
-	for _, element := range p.Values {
+	for _, element := range p.Parts {
 		patPart := &PatternPart{Key: element.Key}
 		if err := patPart.FindOne(); err != nil {
 			return fmt.Errorf("PatternPart with key %q: %v", element.Key, err)

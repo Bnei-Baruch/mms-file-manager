@@ -62,3 +62,21 @@ func (j *JSONB) Scan(value interface{}) error {
 	}
 	return nil
 }
+
+
+type Pairs []struct {
+	Key   string `json:"key"`
+	Value string `json:"value;omitempty"`
+}
+
+func (j Pairs) Value() (driver.Value, error) {
+	valueString, err := json.Marshal(j)
+	return string(valueString), err
+}
+
+func (j *Pairs) Scan(value interface{}) error {
+	if err := json.Unmarshal(value.([]byte), &j); err != nil {
+		return err
+	}
+	return nil
+}

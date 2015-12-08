@@ -27,6 +27,7 @@ type File struct {
 	SourcePath string `sql:"-"` //will be ignored in DB
 	Pattern    Pattern
 	PatternId  sql.NullInt64 `sql:"index"`
+	Attributes Pairs `sql:"type:jsonb"` // parsed attributes out of file name
 }
 
 func (f *File) Load() error {

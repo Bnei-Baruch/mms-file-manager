@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+
 func (fm *FileManager) handler(u updateMsg) {
 	targetDir := fm.TargetDir()
 	if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
@@ -31,7 +32,7 @@ func (fm *FileManager) handler(u updateMsg) {
 	}
 }
 
-func registrationHandler(file *models.File) (error) {
+var registrationHandler = HandlerFunc(func(file *models.File) (error) {
 	file.Status = models.PENDING
 	if err := file.Save(); err != nil {
 		l.Println("Unable to save file:", file, " ERROR: ", err)
@@ -45,7 +46,7 @@ func registrationHandler(file *models.File) (error) {
 
 	os.Rename(file.SourcePath, filepath.Join(filePath, file.FileName))
 	return nil
-}
+})
 
 func (fm *FileManager) TargetDir() string {
 	year, week := time.Now().ISOWeek()

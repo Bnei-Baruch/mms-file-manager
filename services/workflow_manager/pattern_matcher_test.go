@@ -17,7 +17,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(arutz)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arutz_yyyy-mm-dd_type_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "arutz"},
 				{Key: "date", },
@@ -33,7 +33,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(arutz)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arutz_yyyy-mm-dd_type_line.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "arutz"},
 				{Key: "date", },
@@ -48,7 +48,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+)_(cam\d*_\d|xdcam\d*_\d{2,3}|cam\d*|xdcam\d*).([[:alnum:]]{3,4})`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_rawmaterial_line_name_cam|xdcam(*).",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "arvut"},
 				{Key: "date", },
@@ -65,7 +65,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_rawmaterial_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "arvut"},
 				{Key: "date", },
@@ -81,7 +81,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_type_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "arvut"},
 				{Key: "date", },
@@ -97,7 +97,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_type_line.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "arvut"},
 				{Key: "date", },
@@ -112,7 +112,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(ligdol)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_ligdol_yyyy-mm-dd_type_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "ligdol"},
 				{Key: "date", },
@@ -128,7 +128,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(ligdol)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_ligdol_yyyy-mm-dd_type_line.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "archive_type", Value: "ligdol"},
 				{Key: "date", },
@@ -143,7 +143,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(lesson)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_lesson_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "ot"},
 				{Key: "lecturer", },
@@ -160,7 +160,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(lesson)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_lesson_line.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "ot"},
 				{Key: "lecturer", },
@@ -176,7 +176,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+)_(cam\d*_\d|xdcam\d*_\d{2,3}|cam\d*|xdcam\d*).([[:alnum:]]{3,4})`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_rawmaterial_line_name_cam|xdcam(*).*",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "ot"},
 				{Key: "lecturer", },
@@ -194,7 +194,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_rawmaterial_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "ot"},
 				{Key: "lecturer", },
@@ -211,7 +211,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_type_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "ot"},
 				{Key: "lecturer", },
@@ -228,7 +228,7 @@ var patterns = []struct {
 		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_type_line.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", },
 				{Key: "ot"},
 				{Key: "lecturer", },
@@ -244,7 +244,7 @@ var patterns = []struct {
 		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson).(mp4)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson.mp4",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
 				{Key: "lecturer", },
@@ -260,7 +260,7 @@ var patterns = []struct {
 		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson)_(n\d).(mp4)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson_n0-9.mp4",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
 				{Key: "lecturer", },
@@ -277,7 +277,7 @@ var patterns = []struct {
 		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson).(mpg)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
 				{Key: "lecturer", },
@@ -293,7 +293,7 @@ var patterns = []struct {
 		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson)_(n\d).(mpg)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson_n0-9.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
 				{Key: "lecturer"},
@@ -307,38 +307,36 @@ var patterns = []struct {
 	},
 }
 
+var fileNames = []string{
+	"mlt_o_rav_achana_2015-10-27_lesson.mpg",
+	"heb_arutz_2012-12-16_film_crossroads.mpg",
+	"heb_arutz_2013-04-20_promo_luah-shidurim_klali.mpg",
+	"heb_arvut_2012-04-01_rawmaterial_wannabe_pilot_xdcam1_10.mp4",
+	"heb_arvut_2012-09-24_program_hadashot-arvut.mpg",
+	"heb_arvut_2013-05-02_rawmaterial_clip_itzik-safot.mpg",
+	"heb_arvut_2015-04-22_promo_maagal-haim_bekarov.mpg",
+	"heb_ligdol_2011-03-17_program_tofsim-olam_peter-vezeev.mpg",
+	"heb_ligdol_2012-12-12_logo_ligdol-bekeif.mpg",
+	//				"heb_o_rav_bs-tes-01_2003-12-05_lesson_n2.mp4",
+	//				"heb_o_rav_rb-1988-10-dalet-midot_2003-03-30_lesson.mp4",
+	"mlt_o_rav_2015-03-11_lesson_congress_n3.mpg",
+	"mlt_o_rav_2015-10-04_lesson_full.mpg",
+	"mlt_o_rav_2015-10-25_program_radio103fm.mpg",
+	"mlt_o_rav_2015-11-15_program_lc_zima-2015.mpg",
+	"rus_o_rav_2015-09-20_clip_lc_visshiy-razum.mpg",
+	"rus_o_rav_2015-11-04_rawmaterial_taini-vechnoy-knigi_matot-7_xdcam_03.mp4",
+	"rus_o_rav_2015-11-12_rawmaterial_sihot_baikot.mpg",
+}
+
 var _ = Describe("Pattern matching", func() {
 	var file *models.File
+	BeforeEach(func() {
+		preparePatterns()
+	})
 
 	Context("When one pattern matched", func() {
-		BeforeEach(func() {
-			preparePatterns()
-		})
 
 		It("should attach pattern to file", func() {
-
-
-			fileNames := []string{
-				"mlt_o_rav_achana_2015-10-27_lesson.mpg",
-				"heb_arutz_2012-12-16_film_crossroads.mpg",
-				"heb_arutz_2013-04-20_promo_luah-shidurim_klali.mpg",
-				"heb_arvut_2012-04-01_rawmaterial_wannabe_pilot_xdcam1_10.mp4",
-				"heb_arvut_2012-09-24_program_hadashot-arvut.mpg",
-				"heb_arvut_2013-05-02_rawmaterial_clip_itzik-safot.mpg",
-				"heb_arvut_2015-04-22_promo_maagal-haim_bekarov.mpg",
-				"heb_ligdol_2011-03-17_program_tofsim-olam_peter-vezeev.mpg",
-				"heb_ligdol_2012-12-12_logo_ligdol-bekeif.mpg",
-				//				"heb_o_rav_bs-tes-01_2003-12-05_lesson_n2.mp4",
-				//				"heb_o_rav_rb-1988-10-dalet-midot_2003-03-30_lesson.mp4",
-				"mlt_o_rav_2015-03-11_lesson_congress_n3.mpg",
-				"mlt_o_rav_2015-10-04_lesson_full.mpg",
-				"mlt_o_rav_2015-10-25_program_radio103fm.mpg",
-				"mlt_o_rav_2015-11-15_program_lc_zima-2015.mpg",
-				"rus_o_rav_2015-09-20_clip_lc_visshiy-razum.mpg",
-				"rus_o_rav_2015-11-04_rawmaterial_taini-vechnoy-knigi_matot-7_xdcam_03.mp4",
-				"rus_o_rav_2015-11-12_rawmaterial_sihot_baikot.mpg",
-			}
-
 			for _, fileName := range fileNames {
 				file = &models.File{
 					FileName: fileName,
@@ -347,20 +345,40 @@ var _ = Describe("Pattern matching", func() {
 					SourcePath: "path",
 				}
 
-				success, err := wm.AttachToPattern(file)
+				err := wm.AttachToPattern(file)
 				l.Println("Filename: ", fileName)
 				Ω(err).ShouldNot(HaveOccurred())
-				Ω(success).Should(BeTrue())
 				Ω(file.PatternId).ShouldNot(BeNil())
 				Ω(file.Status).Should(Equal(models.HAS_PATTERN))
 			}
 
 		})
 		PIt("should parse fields from file name according to pattern", func() {
+			for _, fileName := range fileNames {
+				file = &models.File{
+					FileName: fileName,
+					TargetDir: "targetDir",
+					Label: "label",
+					SourcePath: "path",
+				}
 
+				err := wm.AttachToPattern(file)
+				Ω(err).ShouldNot(HaveOccurred())
+				Ω(file.Attributes).ShouldNot(BeNil())
+/*
+				for _, p := range file.Pattern.Parts {
+//					p.Key == file.Attributes
+				}
+*/
+
+				//TODO:
+				// 1. keys match
+				// 2. each key has value
+				// 3. values are correct
+			}
 		})
 	})
- 	Context("When no pattern is matched", func() {
+	Context("When no pattern is matched", func() {
 		It("should set file state to NO_PATTERN", func() {
 
 			fileNames := []string{
@@ -376,9 +394,8 @@ var _ = Describe("Pattern matching", func() {
 					SourcePath: "path",
 				}
 
-				success, err := wm.AttachToPattern(file)
+				err := wm.AttachToPattern(file)
 				Ω(err).ShouldNot(HaveOccurred())
-				Ω(success).Should(BeFalse())
 				Ω(file.PatternId.Valid).Should(BeFalse())
 				Ω(file.Status).Should(Equal(models.NO_PATTERN))
 			}
@@ -387,8 +404,36 @@ var _ = Describe("Pattern matching", func() {
 	})
 
 
-	PContext("When more than one pattern is matched", func() {
-		It("should set file state to MANY_PATTERNS", func() {  })
+	Context("When more than one pattern is matched", func() {
+		It("should set file state to MANY_PATTERNS", func() {
+			model := &models.Pattern{
+				Name: "duplicate_mlt_o_rav|norav_name_yyyy-mm-dd_lesson_n0-9.mpg",
+				Parts: models.Pairs{
+					{Key: "lang", Value: "mlt"},
+					{Key: "ot", Value: "o|t"},
+					{Key: "lecturer"},
+					{Key: "name", },
+					{Key: "date", },
+					{Key: "content_type", Value: "lesson"},
+					{Key: "index"},
+				},
+				Extension: "mpg",
+			}
+			err := model.Save()
+			Ω(err).ShouldNot(HaveOccurred())
+
+			file = &models.File{
+				FileName: "mlt_o_rav_rabash_2015-03-11_lesson_n3.mpg",
+				TargetDir: "targetDir",
+				Label: "label",
+				SourcePath: "path",
+			}
+
+			err = wm.AttachToPattern(file)
+			Ω(err).ShouldNot(HaveOccurred())
+			Ω(file.PatternId.Valid).Should(BeFalse())
+			Ω(file.Status).Should(Equal(models.MANY_PATTERNS))
+		})
 	})
 
 })
@@ -401,7 +446,7 @@ var _ = Describe("Pattern saving", func() {
 	It("must reject unknown PatternPart keys", func() {
 		model := models.Pattern{
 			Name: "lang_arutz_yyyy-mm-dd_type_line_name.mpg",
-			Values: models.Values{
+			Parts: models.Pairs{
 				{Key: "Unknown key", },
 			},
 			Extension: "mpg",

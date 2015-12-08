@@ -19,11 +19,11 @@ type updateMsg struct {
 type FileManager struct {
 	updates         chan updateMsg
 	done            chan bool
-	handlers        []handlerFunc
+	handlers        []HandlerFunc
 	TargetDirPrefix string
 }
 
-type handlerFunc func(*models.File) error
+type HandlerFunc func(*models.File) error
 
 type WatchPair struct {
 	WatchDir string
@@ -110,7 +110,7 @@ func (fm *FileManager) Destroy() {
 	}
 }
 
-func (fm *FileManager) Register(handlers ...handlerFunc) {
+func (fm *FileManager) Register(handlers ...HandlerFunc) {
 	for _, f := range handlers {
 		fm.handlers = append(fm.handlers, f)
 	}
