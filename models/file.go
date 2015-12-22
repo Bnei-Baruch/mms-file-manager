@@ -11,23 +11,31 @@ type Status string
 const (
 	PENDING Status = "PENDING"
 	NEW Status = "NEW"
+
 	HAS_PATTERN Status = "HAS_PATTERN"
 	NO_PATTERN Status = "NO_PATTERN"
 	MANY_PATTERNS Status = "MANY_PATTERNS"
+
+	HAS_WORKFLOW Status = "HAS_WORKFLOW"
+	HAS_NO_WORKFLOW Status = "HAS_NO_WORKFLOW"
+	HAS_NO_VALID_WORKFLOW Status = "HAS_NO_VALID_WORKFLOW"
+
 )
 
 type File struct {
 	Model
 	TargetDir  string
 	FileName   string
-	Label      string           // incoming source of file (i.e. ingest, etc.)
+	EntryPoint string                   // incoming source of file (i.e. ingest, etc.)
 	Status     Status `sql:"type:varchar(30)"`
 	Version    int64
-								//	Version string `sql:"index;type:varchar(100);unique" gorm:"column:kuku"`
-	SourcePath string `sql:"-"` //will be ignored in DB
+					    //	Version string `sql:"index;type:varchar(100);unique" gorm:"column:kuku"`
+	SourcePath string `sql:"-"`         //will be ignored in DB
 	Pattern    Pattern
 	PatternId  sql.NullInt64 `sql:"index"`
-	Attributes Pairs `sql:"type:jsonb"` // parsed attributes out of file name
+	Attributes JSONB `sql:"type:jsonb"` // parsed attributes out of file name
+	Workflow   Workflow
+	WorkflowId sql.NullInt64 `sql:"index"`
 }
 
 func (f *File) Load() error {

@@ -19,7 +19,7 @@ func (fm *FileManager) handler(u updateMsg) {
 	file := &models.File{
 		FileName:    filepath.Base(u.filePath),
 		TargetDir: targetDir,
-		Label: u.label,
+		EntryPoint: u.label,
 		SourcePath: u.filePath,
 	}
 

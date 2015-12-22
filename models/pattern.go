@@ -1,10 +1,10 @@
 package models
+
 import (
 	"regexp"
 	"fmt"
 	"strings"
 )
-
 
 type Pattern struct {
 	Model
@@ -15,6 +15,7 @@ type Pattern struct {
 	Workflows []Workflow
 	Parts     Pairs `sql:"type:jsonb"`
 }
+
 type Patterns []Pattern
 
 func (p *Pattern) FindOne() error {

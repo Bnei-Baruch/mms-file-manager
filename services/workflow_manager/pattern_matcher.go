@@ -1,4 +1,5 @@
 package workflow_manager
+
 import (
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"database/sql"
@@ -26,6 +27,15 @@ var AttachToPattern = file_manager.HandlerFunc(func(file *models.File) error {
 			file.Status = models.HAS_PATTERN
 			file.Pattern = patterns[0]
 		}
+	}
+
+	if file.Status == models.HAS_PATTERN {
+		res := file.Pattern.Regexp.Regx.FindAllStringSubmatch(file.FileName, -1)[0][1:]
+		attributes := make(models.JSONB, len(res))
+		for index, el := range file.Pattern.Parts {
+			attributes[el.Key] = res[index]
+		}
+		file.Attributes = attributes
 	}
 
 	return file.Save()

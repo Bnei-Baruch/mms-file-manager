@@ -341,40 +341,37 @@ var _ = Describe("Pattern matching", func() {
 				file = &models.File{
 					FileName: fileName,
 					TargetDir: "targetDir",
-					Label: "label",
+					EntryPoint: "label",
 					SourcePath: "path",
 				}
 
 				err := wm.AttachToPattern(file)
-				l.Println("Filename: ", fileName)
 				Ω(err).ShouldNot(HaveOccurred())
 				Ω(file.PatternId).ShouldNot(BeNil())
 				Ω(file.Status).Should(Equal(models.HAS_PATTERN))
 			}
 
 		})
-		PIt("should parse fields from file name according to pattern", func() {
+		It("should parse fields from file name according to pattern", func() {
 			for _, fileName := range fileNames {
 				file = &models.File{
 					FileName: fileName,
 					TargetDir: "targetDir",
-					Label: "label",
+					EntryPoint: "label",
 					SourcePath: "path",
 				}
 
 				err := wm.AttachToPattern(file)
 				Ω(err).ShouldNot(HaveOccurred())
 				Ω(file.Attributes).ShouldNot(BeNil())
-/*
-				for _, p := range file.Pattern.Parts {
-//					p.Key == file.Attributes
-				}
-*/
 
-				//TODO:
-				// 1. keys match
-				// 2. each key has value
-				// 3. values are correct
+				Ω(len(file.Attributes)).Should(Equal(len(file.Pattern.Parts)))
+				for _, p := range file.Pattern.Parts {
+					value, ok := file.Attributes[p.Key]
+					Ω(ok).Should(BeTrue())
+					Ω(value).ShouldNot(BeZero())
+					//TODO: Check that values are correct - some should be included in list of values (like line, content_type)
+				}
 			}
 		})
 	})
@@ -390,7 +387,7 @@ var _ = Describe("Pattern matching", func() {
 				file = &models.File{
 					FileName: fileName,
 					TargetDir: "targetDir",
-					Label: "label",
+					EntryPoint: "label",
 					SourcePath: "path",
 				}
 
@@ -425,7 +422,7 @@ var _ = Describe("Pattern matching", func() {
 			file = &models.File{
 				FileName: "mlt_o_rav_rabash_2015-03-11_lesson_n3.mpg",
 				TargetDir: "targetDir",
-				Label: "label",
+				EntryPoint: "label",
 				SourcePath: "path",
 			}
 
@@ -465,6 +462,7 @@ var _ = Describe("Pattern saving", func() {
 		pattern = patterns[0].model
 		err = pattern.Save()
 		Ω(err).Should(HaveOccurred())
+
 	})
 
 	It("must create pattern record, and calculate regex and priority", func() {
