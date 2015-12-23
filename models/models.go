@@ -1,10 +1,13 @@
 package models
+
 import (
 	"time"
 	"github.com/jinzhu/gorm"
 	"encoding/json"
 	"database/sql/driver"
 	"regexp"
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	"log"
 )
 
 type Model struct {
@@ -14,7 +17,14 @@ type Model struct {
 	//	DeletedAt *time.Time `sql:"index"`
 }
 
-var db *gorm.DB
+var (
+	db *gorm.DB
+	l *log.Logger
+)
+
+func init() {
+	l = logger.InitLogger(&logger.LogParams{LogPrefix: "[MODEL] "})
+}
 
 func New(dbConn *gorm.DB) {
 	db = dbConn
@@ -31,7 +41,6 @@ func (l Strings) Value() (driver.Value, error) {
 func (l *Strings) Scan(input interface{}) error {
 	return json.Unmarshal(input.([]byte), l)
 }
-
 
 type RegularX struct {
 	Regx *regexp.Regexp
@@ -62,7 +71,6 @@ func (j *JSONB) Scan(value interface{}) error {
 	}
 	return nil
 }
-
 
 type Pairs []struct {
 	Key   string `json:"key"`

@@ -18,7 +18,7 @@ var _ = Describe("WorkflowManager", func() {
 		})
 	})
 
-	PDescribe("Workflow matching", func() {
+	Describe("Workflow matching", func() {
 
 		//TODO: Workflow priority
 		//TODO: content type/line type has variations - should test all
