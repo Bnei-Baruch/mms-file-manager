@@ -18,6 +18,7 @@ const (
 
 	HAS_WORKFLOW Status = "HAS_WORKFLOW"
 	HAS_NO_WORKFLOW Status = "HAS_NO_WORKFLOW"
+	HAS_MANY_WORKFLOWS Status = "HAS_MANY_WORKFLOWS"
 	HAS_NO_VALID_WORKFLOW Status = "HAS_NO_VALID_WORKFLOW"
 
 )
@@ -28,6 +29,7 @@ type File struct {
 	FileName   string
 	EntryPoint string                   // incoming source of file (i.e. ingest, etc.)
 	Status     Status `sql:"type:varchar(30)"`
+	Error      string `sql:"type:text"`
 	Version    int64
 					    //	Version string `sql:"index;type:varchar(100);unique" gorm:"column:kuku"`
 	SourcePath string `sql:"-"`         //will be ignored in DB

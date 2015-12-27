@@ -19,8 +19,10 @@ var _ = Describe("WorkflowManager", func() {
 	})
 
 	Describe("Workflow matching", func() {
+		BeforeEach(func() {
+			db.Exec("DELETE FROM patterns;")
+		})
 
-		//TODO: Workflow priority
 		//TODO: content type/line type has variations - should test all
 
 
@@ -41,25 +43,26 @@ var _ = Describe("WorkflowManager", func() {
 				pattern.Save()
 
 				workflow := &models.Workflow{
-					PatternId: sql.NullInt64{Int64: pattern.ID},
+					PatternId: sql.NullInt64{Int64: pattern.ID, Valid: true},
 					EntryPoint: "SiumAvoda",
-					ContentType: "*",
-					Line: "*",
+					ContentType: sql.NullString{String:"*", Valid: true},
+					Line: sql.NullString{String:"*", Valid: true},
 				}
-				workflow.Save()
+				err := workflow.Save()
+				Ω(err).ShouldNot(HaveOccurred())
 
 				file := &models.File{
 					FileName: "heb_arutz_2012-12-16_film_crossroads.mpg",
 					TargetDir: "targetDir",
 					EntryPoint: "SiumAvoda",
 					SourcePath: "path",
-					PatternId: sql.NullInt64{Int64: pattern.ID},
+					PatternId: sql.NullInt64{Int64: pattern.ID, Valid: true},
 					Status: models.HAS_PATTERN,
 				}
 
 				err = wm.AttachToWorkflow(file)
 				Ω(err).ShouldNot(HaveOccurred())
-				Ω(file.WorkflowId).Should(Equal(workflow.ID))
+				Ω(file.WorkflowId.Int64).Should(Equal(workflow.ID))
 				Ω(file.Status).Should(Equal(models.HAS_WORKFLOW))
 
 			})
