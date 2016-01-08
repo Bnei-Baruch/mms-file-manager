@@ -1,10 +1,14 @@
 package workflow_manager_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"testing"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
+	"github.com/chuckpreslar/gofer"
+"github.com/Bnei-Baruch/mms-file-manager/config"
+	"github.com/joho/godotenv"
+	"fmt"
 )
 
 var patterns = []struct {
@@ -328,162 +332,176 @@ var fileNames = []string{
 	"rus_o_rav_2015-11-12_rawmaterial_sihot_baikot.mpg",
 }
 
-var _ = Describe("Pattern matching", func() {
-	var file *models.File
-	BeforeEach(func() {
-		preparePatterns()
-	})
 
-	Context("When one pattern matched", func() {
+func TestPatternSpec(t *testing.T) {
+	setupSpec()
+	SetDefaultFailureMode(FailureHalts)
+	Convey("Setup", t, func() {
+		Convey("Subject: Pattern matching", func() {
+			var file *models.File
+				preparePatterns()
 
-		It("should attach pattern to file", func() {
-			for _, fileName := range fileNames {
-				file = &models.File{
-					FileName: fileName,
-					TargetDir: "targetDir",
-					EntryPoint: "label",
-					SourcePath: "path",
-				}
+			Convey("When one pattern matched", func() {
 
-				err := wm.AttachToPattern(file)
-				Ω(err).ShouldNot(HaveOccurred())
-				Ω(file.PatternId).ShouldNot(BeNil())
-				Ω(file.Status).Should(Equal(models.HAS_PATTERN))
-			}
+				Convey("It should attach pattern to file", func() {
+					for _, fileName := range fileNames {
+						file = &models.File{
+							FileName: fileName,
+							TargetDir: "targetDir",
+							EntryPoint: "label",
+							SourcePath: "path",
+						}
+
+						err := wm.AttachToPattern(file)
+						So(err, ShouldBeNil)
+						So(file.PatternId, ShouldNotBeNil)
+						So(file.Status, ShouldEqual, models.HAS_PATTERN)
+					}
+
+				})
+				Convey("It should parse fields from file name according to pattern", func() {
+					for _, fileName := range fileNames {
+						file = &models.File{
+							FileName: fileName,
+							TargetDir: "targetDir",
+							EntryPoint: "label",
+							SourcePath: "path",
+						}
+
+						err := wm.AttachToPattern(file)
+						So(err, ShouldBeNil)
+						So(file.Attributes, ShouldNotBeNil)
+						So(len(file.Attributes), ShouldEqual, len(file.Pattern.Parts))
+						for _, p := range file.Pattern.Parts {
+							value, ok := file.Attributes[p.Key]
+							So(ok, ShouldBeTrue)
+							So(value, ShouldNotBeBlank)
+							//TODO: Check that values are correct - some should be included in list of values (like line, content_type)
+						}
+					}
+				})
+			})
+			Convey("When no pattern is matched", func() {
+				Convey("It should set file state to NO_PATTERN", func() {
+
+					fileNames := []string{
+						"heb_o_rav_bs-tes-01_2003-12-05_lesson_n2.mp4",
+						"heb_o_rav_rb-1988-10-dalet-midot_2003-03-30_lesson.mp4",
+					}
+
+					for _, fileName := range fileNames {
+						file = &models.File{
+							FileName: fileName,
+							TargetDir: "targetDir",
+							EntryPoint: "label",
+							SourcePath: "path",
+						}
+
+						err := wm.AttachToPattern(file)
+						So(err, ShouldBeNil)
+						So(file.PatternId.Valid, ShouldBeFalse)
+						So(file.Status, ShouldEqual, models.NO_PATTERN)
+					}
+
+				})
+			})
+
+			Convey("When more than one pattern is matched", func() {
+				Convey("It should set file state to MANY_PATTERNS", func() {
+					model := &models.Pattern{
+						Name: "duplicate_mlt_o_rav|norav_name_yyyy-mm-dd_lesson_n0-9.mpg",
+						Parts: models.Pairs{
+							{Key: "lang", Value: "mlt"},
+							{Key: "ot", Value: "o|t"},
+							{Key: "lecturer"},
+							{Key: "name", },
+							{Key: "date", },
+							{Key: "content_type", Value: "lesson"},
+							{Key: "index"},
+						},
+						Extension: "mpg",
+					}
+					err := model.Save()
+					So(err, ShouldBeNil)
+
+					file = &models.File{
+						FileName: "mlt_o_rav_rabash_2015-03-11_lesson_n3.mpg",
+						TargetDir: "targetDir",
+						EntryPoint: "label",
+						SourcePath: "path",
+					}
+
+					err = wm.AttachToPattern(file)
+					So(err, ShouldBeNil)
+					So(file.PatternId.Valid, ShouldBeFalse)
+					So(file.Status, ShouldEqual, models.MANY_PATTERNS)
+				})
+			})
 
 		})
-		It("should parse fields from file name according to pattern", func() {
-			for _, fileName := range fileNames {
-				file = &models.File{
-					FileName: fileName,
-					TargetDir: "targetDir",
-					EntryPoint: "label",
-					SourcePath: "path",
+
+		Convey("Describe Pattern saving", func() {
+				db.Exec("DELETE FROM patterns;")
+
+			Convey("It should reject unknown PatternPart keys", func() {
+				model := models.Pattern{
+					Name: "lang_arutz_yyyy-mm-dd_type_line_name.mpg",
+					Parts: models.Pairs{
+						{Key: "Unknown key", },
+					},
+					Extension: "mpg",
 				}
 
-				err := wm.AttachToPattern(file)
-				Ω(err).ShouldNot(HaveOccurred())
-				Ω(file.Attributes).ShouldNot(BeNil())
+				err := model.Save()
+				So(err, ShouldNotBeNil)
+			})
 
-				Ω(len(file.Attributes)).Should(Equal(len(file.Pattern.Parts)))
-				for _, p := range file.Pattern.Parts {
-					value, ok := file.Attributes[p.Key]
-					Ω(ok).Should(BeTrue())
-					Ω(value).ShouldNot(BeZero())
-					//TODO: Check that values are correct - some should be included in list of values (like line, content_type)
+			Convey("It should reject patterns with duplicate names", func() {
+				var err error
+				pattern := patterns[0].model
+				err = pattern.Save()
+				So(err, ShouldBeNil)
+
+				pattern = patterns[0].model
+				err = pattern.Save()
+				So(err, ShouldNotBeNil)
+
+			})
+
+			Convey("It should create pattern record, and calculate regex and priority", func() {
+				for _, pat := range patterns {
+					err := pat.model.Save()
+					So(err, ShouldBeNil)
+
+					p := &models.Pattern{Name: pat.model.Name}
+					err = p.FindOne()
+					So(err, ShouldBeNil)
+
+					So(p.Regexp.Regx.String(), ShouldEqual, pat.expectedRegex)
+					So(p.Priority, ShouldEqual, pat.expectedPriority)
 				}
-			}
-		})
-	})
-	Context("When no pattern is matched", func() {
-		It("should set file state to NO_PATTERN", func() {
-
-			fileNames := []string{
-				"heb_o_rav_bs-tes-01_2003-12-05_lesson_n2.mp4",
-				"heb_o_rav_rb-1988-10-dalet-midot_2003-03-30_lesson.mp4",
-			}
-
-			for _, fileName := range fileNames {
-				file = &models.File{
-					FileName: fileName,
-					TargetDir: "targetDir",
-					EntryPoint: "label",
-					SourcePath: "path",
-				}
-
-				err := wm.AttachToPattern(file)
-				Ω(err).ShouldNot(HaveOccurred())
-				Ω(file.PatternId.Valid).Should(BeFalse())
-				Ω(file.Status).Should(Equal(models.NO_PATTERN))
-			}
+			})
 
 		})
 	})
-
-
-	Context("When more than one pattern is matched", func() {
-		It("should set file state to MANY_PATTERNS", func() {
-			model := &models.Pattern{
-				Name: "duplicate_mlt_o_rav|norav_name_yyyy-mm-dd_lesson_n0-9.mpg",
-				Parts: models.Pairs{
-					{Key: "lang", Value: "mlt"},
-					{Key: "ot", Value: "o|t"},
-					{Key: "lecturer"},
-					{Key: "name", },
-					{Key: "date", },
-					{Key: "content_type", Value: "lesson"},
-					{Key: "index"},
-				},
-				Extension: "mpg",
-			}
-			err := model.Save()
-			Ω(err).ShouldNot(HaveOccurred())
-
-			file = &models.File{
-				FileName: "mlt_o_rav_rabash_2015-03-11_lesson_n3.mpg",
-				TargetDir: "targetDir",
-				EntryPoint: "label",
-				SourcePath: "path",
-			}
-
-			err = wm.AttachToPattern(file)
-			Ω(err).ShouldNot(HaveOccurred())
-			Ω(file.PatternId.Valid).Should(BeFalse())
-			Ω(file.Status).Should(Equal(models.MANY_PATTERNS))
-		})
-	})
-
-})
-
-var _ = Describe("Pattern saving", func() {
-	BeforeEach(func() {
-		db.Exec("DELETE FROM patterns;")
-	})
-
-	It("must reject unknown PatternPart keys", func() {
-		model := models.Pattern{
-			Name: "lang_arutz_yyyy-mm-dd_type_line_name.mpg",
-			Parts: models.Pairs{
-				{Key: "Unknown key", },
-			},
-			Extension: "mpg",
-		}
-
-		err := model.Save()
-		Ω(err).Should(HaveOccurred())
-	})
-
-	It("must reject patterns with duplicate names", func() {
-		var err error
-		pattern := patterns[0].model
-		err = pattern.Save()
-		Ω(err).ShouldNot(HaveOccurred())
-
-		pattern = patterns[0].model
-		err = pattern.Save()
-		Ω(err).Should(HaveOccurred())
-
-	})
-
-	It("must create pattern record, and calculate regex and priority", func() {
-		for _, pat := range patterns {
-			err := pat.model.Save()
-			Ω(err).ShouldNot(HaveOccurred())
-
-			p := &models.Pattern{Name: pat.model.Name}
-			err = p.FindOne()
-			Ω(err).ShouldNot(HaveOccurred())
-
-			Ω(p.Regexp.Regx.String()).Should(Equal(pat.expectedRegex))
-			Ω(p.Priority).Should(Equal(pat.expectedPriority))
-		}
-	})
-
-})
-
+}
 func preparePatterns() {
 	db.Exec("DELETE FROM patterns;")
 	for _, pat := range patterns {
 		pat.model.Save()
+	}
+}
+
+func setupSpec(){
+	// Load test ENV variables
+	godotenv.Load("../../.env.test")
+	db = config.NewDB()
+	models.New(db)
+	if err := gofer.LoadAndPerform("db:empty", "--env=../../.env.test"); err != nil {
+		panic(fmt.Sprintf("Unable to empty database %v", err))
+	}
+
+	if err := gofer.LoadAndPerform("db:migrate", "--env=../../.env.test"); err != nil {
+		panic(fmt.Sprintf("Unable to migrate database %v", err))
 	}
 }

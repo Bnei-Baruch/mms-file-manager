@@ -1,22 +1,21 @@
 package logger_test
 
-import (
+import
+(
 	_ "github.com/Bnei-Baruch/mms-file-manager/services/logger"
-
-	. "github.com/onsi/ginkgo"
-	_ "github.com/onsi/gomega"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
-var _ = Describe("Logger", func() {
-	Context("Writing logs", func() {
-		XIt("writes to screen", func() {
+func TestLoggerSpec(t *testing.T) {
+	Convey("Writing logs", t, func() {
+		Convey("writes to screen", func() {
 		})
-		XIt("writes to file", func() {
+		Convey("writes to file", func() {
 		})
-		XIt("discards log", func() {
+		Convey("discards log", func() {
 		})
-		XIt("adds prefix to output", func() {
+		Convey("adds prefix to output", func() {
 		})
 	})
-
-})
+}

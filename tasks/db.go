@@ -144,12 +144,12 @@ var DBAutoMigrate = gofer.Register(gofer.Task{
 
 		var err error
 		if err = db.AutoMigrate(
+			&models.Line{},
+			&models.ContentType{},
 			&models.File{},
 			&models.Pattern{},
 			&models.PatternPart{},
 			&models.Workflow{},
-			&models.ContentType{},
-			&models.Line{},
 		).Error; err != nil {
 			l.Fatal("Could not automigrate.", err)
 		}

@@ -42,6 +42,11 @@ gulp.task("watch", ["assets:compile"], function() {
   gulp.src('').pipe(shell('ginkgo watch -failFast=true -noisyPendings=false -progress=true -randomizeAllSpecs=true -r=true -cover=true -v=true -trace=true'));
 });
 
+gulp.task("WEB-UI", ["assets:compile"], function() {
+    gulp.src('').pipe(shell('goconvey -packages=1 -excludedDirs=models,routes,templates,migrations,public,assets,node_modules,vendor,tmp,config,tasks'));
+});
+
+
 // Production
 // -----------------------------------------------------------
 

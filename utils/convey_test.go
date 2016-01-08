@@ -23,6 +23,9 @@ func TestConveyEventuallySpec(t *testing.T) {
 				time.Sleep(2 * time.Second)
 				return true
 			}, 1 * time.Second, assertions.ShouldBeTrue)
+
+			// We want to check that the go func doesn't panic
+			time.Sleep(2 * time.Second)
 			So(res, ShouldNotBeEmpty)
 		})
 

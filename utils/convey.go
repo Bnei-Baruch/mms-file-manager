@@ -58,7 +58,6 @@ func Eventually(actual interface{}, expected ...interface{}) (res string) {
 	done := make(chan bool)
 	defer func() {
 		ticker.Stop()
-		close(done)
 	}()
 
 	go func() {
