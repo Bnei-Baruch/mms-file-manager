@@ -43,7 +43,7 @@ gulp.task("watch", ["assets:compile"], function() {
 });
 
 gulp.task("WEB-UI", ["assets:compile"], function() {
-    gulp.src('').pipe(shell('goconvey -packages=1 -excludedDirs=models,routes,templates,migrations,public,assets,node_modules,vendor,tmp,config,tasks'));
+    gulp.src('').pipe(shell('goconvey -packages=1 -excludedDirs=models,routes,templates,migrations,public,assets,node_modules,vendor,tmp,config,tasks,test_files'));
 });
 
 

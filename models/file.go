@@ -1,4 +1,5 @@
 package models
+
 import (
 	"fmt"
 	"database/sql/driver"
@@ -20,24 +21,31 @@ const (
 	HAS_NO_WORKFLOW Status = "HAS_NO_WORKFLOW"
 	HAS_MANY_WORKFLOWS Status = "HAS_MANY_WORKFLOWS"
 	HAS_NO_VALID_WORKFLOW Status = "HAS_NO_VALID_WORKFLOW"
-
 )
+
+type ValidationResult struct {
+	Passed       bool
+	ErrorMessage error
+}
+//type ValidationResults map[string]ValidationResult
 
 type File struct {
 	Model
-	TargetDir  string
-	FileName   string
-	EntryPoint string                   // incoming source of file (i.e. ingest, etc.)
-	Status     Status `sql:"type:varchar(30)"`
-	Error      string `sql:"type:text"`
-	Version    int64
-					    //	Version string `sql:"index;type:varchar(100);unique" gorm:"column:kuku"`
-	SourcePath string `sql:"-"`         //will be ignored in DB
-	Pattern    Pattern
-	PatternId  sql.NullInt64 `sql:"index"`
-	Attributes JSONB `sql:"type:jsonb"` // parsed attributes out of file name
-	Workflow   Workflow
-	WorkflowId sql.NullInt64 `sql:"index"`
+	TargetDir        string
+	FileName         string
+	FullPath         string `sql:"type:text"` // - TargetDir/Version/FileName
+	EntryPoint       string                   // incoming source of file (i.e. ingest, etc.)
+	Status           Status `sql:"type:varchar(30)"`
+	Error            string `sql:"type:text"`
+	Version          int64
+											  //	Version string `sql:"index;type:varchar(100);unique" gorm:"column:kuku"`
+	SourcePath       string `sql:"-"`         //will be ignored in DB
+	Pattern          Pattern
+	PatternId        sql.NullInt64 `sql:"index"`
+	Attributes       JSONB `sql:"type:jsonb"` // parsed attributes out of file name
+	Workflow         Workflow
+	WorkflowId       sql.NullInt64 `sql:"index"`
+	ValidationResult JSONB `sql:"type:jsonb"` // map[string] struct{passed bool, err_message string}
 }
 
 func (f *File) Load() error {
@@ -45,6 +53,10 @@ func (f *File) Load() error {
 }
 
 func (f *File) Save() error {
+	return db.Save(f).Error
+}
+
+func (f *File) CreateVersion() error {
 	// check if present in DB
 	//	if not just add file record and rename + move file
 	//	if present

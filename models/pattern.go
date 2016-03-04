@@ -52,7 +52,7 @@ func (p *Pattern) calculateRegexField() error {
 
 	for _, element := range p.Parts {
 		patPart := &PatternPart{Key: element.Key}
-		if err := patPart.FindOne(); err != nil {
+		if err := patPart.FindOneByKey(); err != nil {
 			return fmt.Errorf("PatternPart with key %q: %v", element.Key, err)
 		}
 

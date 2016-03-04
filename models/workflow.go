@@ -13,6 +13,7 @@ type Workflow struct {
 	EntryPoint  string
 	ContentType sql.NullString
 	Line        sql.NullString
+	Validations StringSlice `sql:"type:varchar[]"`
 	//	MaterialType
 	//	ArchiveType
 	//	Language(s)

@@ -5,10 +5,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
-	"github.com/chuckpreslar/gofer"
-"github.com/Bnei-Baruch/mms-file-manager/config"
-	"github.com/joho/godotenv"
-	"fmt"
+	"github.com/Bnei-Baruch/mms-file-manager/utils"
 )
 
 var patterns = []struct {
@@ -334,7 +331,7 @@ var fileNames = []string{
 
 
 func TestPatternSpec(t *testing.T) {
-	setupSpec()
+	db = utils.SetupSpec()
 	SetDefaultFailureMode(FailureHalts)
 	Convey("Setup", t, func() {
 		Convey("Subject: Pattern matching", func() {
@@ -352,6 +349,7 @@ func TestPatternSpec(t *testing.T) {
 							SourcePath: "path",
 						}
 
+						file.CreateVersion()
 						err := wm.AttachToPattern(file)
 						So(err, ShouldBeNil)
 						So(file.PatternId, ShouldNotBeNil)
@@ -368,6 +366,7 @@ func TestPatternSpec(t *testing.T) {
 							SourcePath: "path",
 						}
 
+						file.CreateVersion()
 						err := wm.AttachToPattern(file)
 						So(err, ShouldBeNil)
 						So(file.Attributes, ShouldNotBeNil)
@@ -397,6 +396,7 @@ func TestPatternSpec(t *testing.T) {
 							SourcePath: "path",
 						}
 
+						file.CreateVersion()
 						err := wm.AttachToPattern(file)
 						So(err, ShouldBeNil)
 						So(file.PatternId.Valid, ShouldBeFalse)
@@ -431,6 +431,7 @@ func TestPatternSpec(t *testing.T) {
 						SourcePath: "path",
 					}
 
+					file.CreateVersion()
 					err = wm.AttachToPattern(file)
 					So(err, ShouldBeNil)
 					So(file.PatternId.Valid, ShouldBeFalse)
@@ -492,16 +493,3 @@ func preparePatterns() {
 	}
 }
 
-func setupSpec(){
-	// Load test ENV variables
-	godotenv.Load("../../.env.test")
-	db = config.NewDB()
-	models.New(db)
-	if err := gofer.LoadAndPerform("db:empty", "--env=../../.env.test"); err != nil {
-		panic(fmt.Sprintf("Unable to empty database %v", err))
-	}
-
-	if err := gofer.LoadAndPerform("db:migrate", "--env=../../.env.test"); err != nil {
-		panic(fmt.Sprintf("Unable to migrate database %v", err))
-	}
-}

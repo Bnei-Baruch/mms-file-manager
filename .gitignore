@@ -11,3 +11,4 @@ mms-file-manager
 .vscode
 debug
 **/*.cov
+vendor

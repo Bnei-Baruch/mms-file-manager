@@ -17,8 +17,11 @@ func init() {
 var AttachToWorkflow = file_manager.HandlerFunc(func(file *models.File) (err error) {
 
 	defer func() {
+		if err != nil {
+			return
+		}
 		if err = file.Save(); err != nil {
-			l.Printf("Problem saving file -  %s : %s", file.FileName, err)
+			l.Printf("Problem updating file -  %s : %s", file.FileName, err)
 		}
 	}()
 

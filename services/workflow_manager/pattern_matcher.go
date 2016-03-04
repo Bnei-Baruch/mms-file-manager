@@ -6,11 +6,20 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 )
 
-var AttachToPattern = file_manager.HandlerFunc(func(file *models.File) error {
+var AttachToPattern = file_manager.HandlerFunc(func(file *models.File) (err error) {
 	patterns := models.Patterns{}
-	if err := patterns.FindAllByFileMatch(file.FileName); err != nil {
-		return err
+	if err = patterns.FindAllByFileMatch(file.FileName); err != nil {
+		return
 	}
+
+	defer func() {
+		if err != nil {
+			return
+		}
+		if err = file.Save(); err != nil {
+			l.Printf("Problem updating file -  %s : %s", file.FileName, err)
+		}
+	}()
 
 	switch  len(patterns) {
 	case 0:
@@ -38,5 +47,5 @@ var AttachToPattern = file_manager.HandlerFunc(func(file *models.File) error {
 		file.Attributes = attributes
 	}
 
-	return file.Save()
+	return
 })

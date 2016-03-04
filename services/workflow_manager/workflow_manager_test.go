@@ -9,6 +9,7 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	"github.com/jinzhu/gorm"
 	"log"
+	"github.com/Bnei-Baruch/mms-file-manager/utils"
 )
 
 var (
@@ -17,7 +18,7 @@ var (
 )
 
 func TestWorkflowSpec(t *testing.T) {
-	setupSpec()
+	db = utils.SetupSpec()
 
 	Convey("Setup", t, func() {
 
@@ -70,6 +71,7 @@ func TestWorkflowSpec(t *testing.T) {
 						Status: models.HAS_PATTERN,
 					}
 
+					file.CreateVersion()
 					err = wm.AttachToWorkflow(file)
 					So(err, ShouldBeNil)
 					So(file.WorkflowId.Int64, ShouldEqual, workflow.ID)

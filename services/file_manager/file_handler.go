@@ -34,8 +34,10 @@ func (fm *FileManager) handler(u updateMsg) {
 
 var registrationHandler = HandlerFunc(func(file *models.File) (error) {
 	file.Status = models.PENDING
-	if err := file.Save(); err != nil {
-		l.Println("Unable to save file:", file, " ERROR: ", err)
+
+	//First time the file should be created. All other places should use file.Update() instead!
+	if err := file.CreateVersion(); err != nil {
+		l.Println("Unable to create file:", file, " ERROR: ", err)
 		return err
 	}
 	filePath := file.FilePath()
@@ -43,8 +45,8 @@ var registrationHandler = HandlerFunc(func(file *models.File) (error) {
 		l.Println("Unable to create directory:", filePath, " ERROR: ", err)
 		return err
 	}
-
-	os.Rename(file.SourcePath, filepath.Join(filePath, file.FileName))
+	file.FullPath = filepath.Join(filePath, file.FileName)
+	os.Rename(file.SourcePath, file.FullPath)
 	return nil
 })
 

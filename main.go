@@ -7,9 +7,12 @@ import (
 	"os"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	"github.com/joho/godotenv"
+	"github.com/Bnei-Baruch/mms-file-manager/tasks"
 )
 
 func main() {
+
+	tasks.Run([]string{"rake", "db", "migrate", "--name", "Jeremy"})
 	godotenv.Load(".env")
 	app := config.NewApp(".")
 	routes.Setup(app)

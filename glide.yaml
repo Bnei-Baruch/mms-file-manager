@@ -1,0 +1,18 @@
+package: github.com/Bnei-Baruch/mms-file-manager
+import:
+- package: bitbucket.org/liamstask/goose
+  subpackages:
+  - lib/goose
+- package: github.com/DavidHuie/gomigrate
+- package: github.com/chuckpreslar/gofer
+- package: github.com/codegangsta/negroni
+- package: github.com/fzakaria/goav
+  subpackages:
+  - avformat
+- package: github.com/gorilla/mux
+- package: github.com/gorilla/schema
+- package: github.com/jinzhu/gorm
+- package: github.com/joho/godotenv
+- package: github.com/lib/pq
+- package: github.com/sthorne/reflections
+- package: github.com/unrolled/render

@@ -117,6 +117,7 @@ var DBEmptyDB = gofer.Register(gofer.Task{
 		}
 
 		db := config.NewDB()
+		defer db.Close()
 
 		var err error
 		if err = db.Exec(`
@@ -141,6 +142,7 @@ var DBAutoMigrate = gofer.Register(gofer.Task{
 		}
 
 		db := config.NewDB()
+		defer db.Close()
 
 		var err error
 		if err = db.AutoMigrate(
