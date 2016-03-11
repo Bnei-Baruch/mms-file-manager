@@ -2,10 +2,11 @@ package workflow_manager_test
 
 import (
 	"testing"
-	. "github.com/smartystreets/goconvey/convey"
+
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
 	"github.com/Bnei-Baruch/mms-file-manager/utils"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 var patterns = []struct {
@@ -15,242 +16,242 @@ var patterns = []struct {
 }{
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(arutz)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(arutz)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arutz_yyyy-mm-dd_type_line_name.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "arutz"},
-				{Key: "date", },
-				{Key: "content_type", },
-				{Key: "line", },
-				{Key: "name", },
+				{Key: "date"},
+				{Key: "content_type"},
+				{Key: "line"},
+				{Key: "name"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(arutz)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(arutz)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arutz_yyyy-mm-dd_type_line.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "arutz"},
-				{Key: "date", },
-				{Key: "content_type", },
-				{Key: "line", },
+				{Key: "date"},
+				{Key: "content_type"},
+				{Key: "line"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 2,
-		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+)_(cam\d*_\d|xdcam\d*_\d{2,3}|cam\d*|xdcam\d*).([[:alnum:]]{3,4})`,
+		expectedRegex:    `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+)_(cam\d*_\d|xdcam\d*_\d{2,3}|cam\d*|xdcam\d*).([[:alnum:]]{3,4})`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_rawmaterial_line_name_cam|xdcam(*).",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "arvut"},
-				{Key: "date", },
+				{Key: "date"},
 				{Key: "content_type", Value: "rawmaterial"},
-				{Key: "line", },
-				{Key: "name", },
-				{Key: "cam", },
+				{Key: "line"},
+				{Key: "name"},
+				{Key: "cam"},
 			},
 			Extension: "[[:alnum:]]{3,4}",
 		},
 	},
 	{
 		expectedPriority: 2,
-		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_rawmaterial_line_name.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "arvut"},
-				{Key: "date", },
+				{Key: "date"},
 				{Key: "content_type", Value: "rawmaterial"},
-				{Key: "line", },
-				{Key: "name", },
+				{Key: "line"},
+				{Key: "name"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_type_line_name.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "arvut"},
-				{Key: "date", },
+				{Key: "date"},
 				{Key: "content_type"},
-				{Key: "line", },
-				{Key: "name", },
+				{Key: "line"},
+				{Key: "name"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(arvut)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_arvut_yyyy-mm-dd_type_line.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "arvut"},
-				{Key: "date", },
+				{Key: "date"},
 				{Key: "content_type"},
-				{Key: "line", },
+				{Key: "line"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(ligdol)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(ligdol)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_ligdol_yyyy-mm-dd_type_line_name.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "ligdol"},
-				{Key: "date", },
+				{Key: "date"},
 				{Key: "content_type"},
-				{Key: "line", },
-				{Key: "name", },
+				{Key: "line"},
+				{Key: "name"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(ligdol)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(ligdol)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_ligdol_yyyy-mm-dd_type_line.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "archive_type", Value: "ligdol"},
-				{Key: "date", },
+				{Key: "date"},
 				{Key: "content_type"},
-				{Key: "line", },
+				{Key: "line"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(lesson)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(lesson)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_lesson_line_name.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "ot"},
-				{Key: "lecturer", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "date"},
 				{Key: "content_type", Value: "lesson"},
-				{Key: "line", },
-				{Key: "name", },
+				{Key: "line"},
+				{Key: "name"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(lesson)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(lesson)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_lesson_line.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "ot"},
-				{Key: "lecturer", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "date"},
 				{Key: "content_type", Value: "lesson"},
-				{Key: "line", },
+				{Key: "line"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+)_(cam\d*_\d|xdcam\d*_\d{2,3}|cam\d*|xdcam\d*).([[:alnum:]]{3,4})`,
+		expectedRegex:    `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+)_(cam\d*_\d|xdcam\d*_\d{2,3}|cam\d*|xdcam\d*).([[:alnum:]]{3,4})`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_rawmaterial_line_name_cam|xdcam(*).*",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "ot"},
-				{Key: "lecturer", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "date"},
 				{Key: "content_type", Value: "rawmaterial"},
-				{Key: "line", },
-				{Key: "name", },
-				{Key: "cam", },
+				{Key: "line"},
+				{Key: "name"},
+				{Key: "cam"},
 			},
 			Extension: "[[:alnum:]]{3,4}",
 		},
 	},
 	{
 		expectedPriority: 1,
-		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_(rawmaterial)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_rawmaterial_line_name.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "ot"},
-				{Key: "lecturer", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "date"},
 				{Key: "content_type", Value: "rawmaterial"},
-				{Key: "line", },
-				{Key: "name", },
+				{Key: "line"},
+				{Key: "name"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 0,
-		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_type_line_name.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "ot"},
-				{Key: "lecturer", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "date"},
 				{Key: "content_type"},
-				{Key: "line", },
-				{Key: "name", },
+				{Key: "line"},
+				{Key: "name"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 0,
-		expectedRegex: `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
+		expectedRegex:    `([[:lower:]]{3,4})_(o|t)_(rav|norav)_(\d{4}-\d{2}-\d{2})_([[:lower:]]+)_([a-z\-\d]+).(mpg)`,
 		model: models.Pattern{
 			Name: "lang_o|t_rav|norav_yyyy-mm-dd_type_line.mpg",
 			Parts: models.Pairs{
-				{Key: "lang", },
+				{Key: "lang"},
 				{Key: "ot"},
-				{Key: "lecturer", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "date"},
 				{Key: "content_type"},
-				{Key: "line", },
+				{Key: "line"},
 			},
 			Extension: "mpg",
 		},
 	},
 	{
 		expectedPriority: 3,
-		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson).(mp4)`,
+		expectedRegex:    `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson).(mp4)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson.mp4",
 			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
-				{Key: "lecturer", },
-				{Key: "name", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "name"},
+				{Key: "date"},
 				{Key: "content_type", Value: "lesson"},
 			},
 			Extension: "mp4",
@@ -258,15 +259,15 @@ var patterns = []struct {
 	},
 	{
 		expectedPriority: 3,
-		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson)_(n\d).(mp4)`,
+		expectedRegex:    `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson)_(n\d).(mp4)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson_n0-9.mp4",
 			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
-				{Key: "lecturer", },
-				{Key: "name", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "name"},
+				{Key: "date"},
 				{Key: "content_type", Value: "lesson"},
 				{Key: "index"},
 			},
@@ -275,15 +276,15 @@ var patterns = []struct {
 	},
 	{
 		expectedPriority: 3,
-		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson).(mpg)`,
+		expectedRegex:    `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson).(mpg)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson.mpg",
 			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
-				{Key: "lecturer", },
-				{Key: "name", },
-				{Key: "date", },
+				{Key: "lecturer"},
+				{Key: "name"},
+				{Key: "date"},
 				{Key: "content_type", Value: "lesson"},
 			},
 			Extension: "mpg",
@@ -291,15 +292,15 @@ var patterns = []struct {
 	},
 	{
 		expectedPriority: 3,
-		expectedRegex: `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson)_(n\d).(mpg)`,
+		expectedRegex:    `(mlt)_(o)_(rav|norav)_([a-z\-\d]+)_(\d{4}-\d{2}-\d{2})_(lesson)_(n\d).(mpg)`,
 		model: models.Pattern{
 			Name: "mlt_o_rav|norav_name_yyyy-mm-dd_lesson_n0-9.mpg",
 			Parts: models.Pairs{
 				{Key: "lang", Value: "mlt"},
 				{Key: "ot", Value: "o"},
 				{Key: "lecturer"},
-				{Key: "name", },
-				{Key: "date", },
+				{Key: "name"},
+				{Key: "date"},
 				{Key: "content_type", Value: "lesson"},
 				{Key: "index"},
 			},
@@ -329,22 +330,21 @@ var fileNames = []string{
 	"rus_o_rav_2015-11-12_rawmaterial_sihot_baikot.mpg",
 }
 
-
 func TestPatternSpec(t *testing.T) {
 	db = utils.SetupSpec()
 	SetDefaultFailureMode(FailureHalts)
 	Convey("Setup", t, func() {
 		Convey("Subject: Pattern matching", func() {
 			var file *models.File
-				preparePatterns()
+			preparePatterns()
 
 			Convey("When one pattern matched", func() {
 
 				Convey("It should attach pattern to file", func() {
 					for _, fileName := range fileNames {
 						file = &models.File{
-							FileName: fileName,
-							TargetDir: "targetDir",
+							FileName:   fileName,
+							TargetDir:  "targetDir",
 							EntryPoint: "label",
 							SourcePath: "path",
 						}
@@ -360,8 +360,8 @@ func TestPatternSpec(t *testing.T) {
 				Convey("It should parse fields from file name according to pattern", func() {
 					for _, fileName := range fileNames {
 						file = &models.File{
-							FileName: fileName,
-							TargetDir: "targetDir",
+							FileName:   fileName,
+							TargetDir:  "targetDir",
 							EntryPoint: "label",
 							SourcePath: "path",
 						}
@@ -390,8 +390,8 @@ func TestPatternSpec(t *testing.T) {
 
 					for _, fileName := range fileNames {
 						file = &models.File{
-							FileName: fileName,
-							TargetDir: "targetDir",
+							FileName:   fileName,
+							TargetDir:  "targetDir",
 							EntryPoint: "label",
 							SourcePath: "path",
 						}
@@ -414,8 +414,8 @@ func TestPatternSpec(t *testing.T) {
 							{Key: "lang", Value: "mlt"},
 							{Key: "ot", Value: "o|t"},
 							{Key: "lecturer"},
-							{Key: "name", },
-							{Key: "date", },
+							{Key: "name"},
+							{Key: "date"},
 							{Key: "content_type", Value: "lesson"},
 							{Key: "index"},
 						},
@@ -425,8 +425,8 @@ func TestPatternSpec(t *testing.T) {
 					So(err, ShouldBeNil)
 
 					file = &models.File{
-						FileName: "mlt_o_rav_rabash_2015-03-11_lesson_n3.mpg",
-						TargetDir: "targetDir",
+						FileName:   "mlt_o_rav_rabash_2015-03-11_lesson_n3.mpg",
+						TargetDir:  "targetDir",
 						EntryPoint: "label",
 						SourcePath: "path",
 					}
@@ -442,13 +442,13 @@ func TestPatternSpec(t *testing.T) {
 		})
 
 		Convey("Describe Pattern saving", func() {
-				db.Exec("DELETE FROM patterns;")
+			db.Exec("DELETE FROM patterns;")
 
 			Convey("It should reject unknown PatternPart keys", func() {
 				model := models.Pattern{
 					Name: "lang_arutz_yyyy-mm-dd_type_line_name.mpg",
 					Parts: models.Pairs{
-						{Key: "Unknown key", },
+						{Key: "Unknown key"},
 					},
 					Extension: "mpg",
 				}
@@ -492,4 +492,3 @@ func preparePatterns() {
 		pat.model.Save()
 	}
 }
-

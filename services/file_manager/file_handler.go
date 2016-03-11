@@ -1,13 +1,14 @@
 package file_manager
+
 import (
-	"path/filepath"
 	"os"
+	"path/filepath"
+	"strconv"
 	"time"
+
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/utils"
-	"strconv"
 )
-
 
 func (fm *FileManager) handler(u updateMsg) {
 	targetDir := fm.TargetDir()
@@ -17,8 +18,8 @@ func (fm *FileManager) handler(u updateMsg) {
 	}
 
 	file := &models.File{
-		FileName:    filepath.Base(u.filePath),
-		TargetDir: targetDir,
+		FileName:   filepath.Base(u.filePath),
+		TargetDir:  targetDir,
 		EntryPoint: u.label,
 		SourcePath: u.filePath,
 	}
@@ -32,7 +33,7 @@ func (fm *FileManager) handler(u updateMsg) {
 	}
 }
 
-var registrationHandler = HandlerFunc(func(file *models.File) (error) {
+var registrationHandler = HandlerFunc(func(file *models.File) error {
 	file.Status = models.PENDING
 
 	//First time the file should be created. All other places should use file.Update() instead!

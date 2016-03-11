@@ -1,13 +1,14 @@
 package models
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
-	"encoding/json"
 	"database/sql/driver"
-	"regexp"
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	"encoding/json"
 	"log"
+	"regexp"
+	"time"
+
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	"github.com/jinzhu/gorm"
 )
 
 type Model struct {
@@ -19,7 +20,7 @@ type Model struct {
 
 var (
 	db *gorm.DB
-	l *log.Logger
+	l  *log.Logger
 )
 
 func init() {

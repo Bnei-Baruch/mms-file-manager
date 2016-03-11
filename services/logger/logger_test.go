@@ -1,10 +1,10 @@
 package logger_test
 
-import
-(
+import (
+	"testing"
+
 	_ "github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestLoggerSpec(t *testing.T) {

@@ -1,17 +1,27 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
+	"github.com/Bnei-Baruch/mms-file-manager/cmd"
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/routes"
 	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
-	"os"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"github.com/joho/godotenv"
 	"github.com/Bnei-Baruch/mms-file-manager/tasks"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := cmd.RootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
 
+}
+
+func stam() {
 	tasks.Run([]string{"rake", "db", "migrate", "--name", "Jeremy"})
 	godotenv.Load(".env")
 	app := config.NewApp(".")

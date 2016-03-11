@@ -1,8 +1,9 @@
 package workflow_manager
 
 import (
-	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"database/sql"
+
+	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 )
 
@@ -21,7 +22,7 @@ var AttachToPattern = file_manager.HandlerFunc(func(file *models.File) (err erro
 		}
 	}()
 
-	switch  len(patterns) {
+	switch len(patterns) {
 	case 0:
 		file.Status = models.NO_PATTERN
 		file.PatternId = sql.NullInt64{}

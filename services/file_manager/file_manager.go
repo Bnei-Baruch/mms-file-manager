@@ -1,15 +1,15 @@
 package file_manager
 
-import
-(
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+import (
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
+
 	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 )
 
 type updateMsg struct {
@@ -47,7 +47,6 @@ func init() {
 	l = logger.InitLogger(&logger.LogParams{LogPrefix: "[FM] "})
 }
 
-
 /*
 *  We are expecting the following structure of configuration file:
 *  watch:
@@ -57,7 +56,7 @@ func init() {
 *      - label: label_name1
 *      - source: dir2
 *      - label: label_name2
-*/
+ */
 
 /*
  * 1. Initialize File manager.
@@ -65,8 +64,8 @@ func init() {
  */
 func NewFM(targetDirPrefix string, watches ...WatchPair) (fm *FileManager, err error) {
 	fm = &FileManager{
-		updates:  make(chan updateMsg, 1),
-		done:     make(chan bool),
+		updates:         make(chan updateMsg, 1),
+		done:            make(chan bool),
 		TargetDirPrefix: targetDirPrefix,
 	}
 
@@ -153,7 +152,7 @@ func (fm *FileManager) handleNewFiles() {
 				wg.Wait()
 				return
 			case u := <-fm.updates:
-			// Don't handle files that are already in cache, i.e. are handled already
+				// Don't handle files that are already in cache, i.e. are handled already
 				if _, ok := fc.cache[u.filePath]; !ok {
 					fc.cache[u.filePath] = u
 					wg.Add(1)
@@ -168,7 +167,6 @@ func (fm *FileManager) handleNewFiles() {
 		}
 	}()
 }
-
 
 func (fm *FileManager) watch(watchDir, label string) {
 	for {

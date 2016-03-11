@@ -1,10 +1,11 @@
 package config
 
 import (
+	"log"
+	"os"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"os"
-	"log"
 )
 
 // Return a new gorm instance with a connection to the DB as specified
@@ -19,5 +20,5 @@ func NewDB() *gorm.DB {
 		log.Fatalf("DB connection error: %v\n", err)
 	}
 
-	return &db
+	return db
 }

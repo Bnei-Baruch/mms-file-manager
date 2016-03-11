@@ -1,42 +1,43 @@
 package file_manager_test
 
 import (
+	"errors"
+	"flag"
 	"fmt"
-	fm "github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
+	"log"
 	"os"
 	"path/filepath"
-	"time"
-	"errors"
-	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"strings"
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"github.com/jinzhu/gorm"
 	"testing"
-	"log"
-	"github.com/joho/godotenv"
-	"github.com/chuckpreslar/gofer"
+	"time"
+
 	"github.com/Bnei-Baruch/mms-file-manager/config"
-	. "github.com/smartystreets/goconvey/convey"
-	"flag"
+	"github.com/Bnei-Baruch/mms-file-manager/models"
+	fm "github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	"github.com/Bnei-Baruch/mms-file-manager/utils"
+	"github.com/chuckpreslar/gofer"
+	"github.com/jinzhu/gorm"
+	"github.com/joho/godotenv"
 	"github.com/smartystreets/assertions"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 var (
-	l      *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[FM-TEST] "})
-	db    *gorm.DB
+	l                     *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[FM-TEST] "})
+	db                    *gorm.DB
 	watchDir1, targetDir1 = "tmp/source1", "tmp/target1"
-	watchFile1 = filepath.Join(watchDir1, "file1.txt")
-	targetFile1v1 = filepath.Join(targetDir1, "*/*/v01/file1.txt")
-	targetFile1v2 = filepath.Join(targetDir1, "*/*/v02/file1.txt")
+	watchFile1            = filepath.Join(watchDir1, "file1.txt")
+	targetFile1v1         = filepath.Join(targetDir1, "*/*/v01/file1.txt")
+	targetFile1v2         = filepath.Join(targetDir1, "*/*/v02/file1.txt")
 
 	watchDir2, targetDir2 = "tmp/source2", "tmp/target2"
-	watchFile2 = filepath.Join(watchDir2, "file2.txt")
-	targetFile2v1 = filepath.Join(targetDir2, "*/*/v01/file2.txt")
+	watchFile2            = filepath.Join(watchDir2, "file2.txt")
+	targetFile2v1         = filepath.Join(targetDir2, "*/*/v01/file2.txt")
 
 	fileManager  *fm.FileManager = nil
 	fileManager2 *fm.FileManager = nil
-	err error
+	err          error
 )
 
 func TestMain(m *testing.M) {
@@ -96,7 +97,7 @@ func TestFileManagerSpec(t *testing.T) {
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile1v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 				})
 
 				Convey("It should copy only files, not directories", func() {
@@ -117,7 +118,7 @@ func TestFileManagerSpec(t *testing.T) {
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile1v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 				})
 
 				Convey("It should copy 2 new different files to target dir", func() {
@@ -133,12 +134,12 @@ func TestFileManagerSpec(t *testing.T) {
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile1v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile2)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 				})
 
 			})
@@ -166,12 +167,12 @@ func TestFileManagerSpec(t *testing.T) {
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile1v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile2v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 				})
 
 				Convey("after destroying and recreating both file managers files should be moved to target directories", func() {
@@ -193,12 +194,12 @@ func TestFileManagerSpec(t *testing.T) {
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile1v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile2v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 				})
 			})
 
@@ -218,13 +219,13 @@ func TestFileManagerSpec(t *testing.T) {
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile1v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 
 					createTestFile(watchFile1)
 					So(func() interface{} {
 						files, _ := filepath.Glob(targetFile1v1)
 						return files
-					}, utils.Eventually, 3 * time.Second, assertions.ShouldNotBeNil)
+					}, utils.Eventually, 3*time.Second, assertions.ShouldNotBeNil)
 				})
 
 			})
@@ -252,7 +253,7 @@ func TestFileManagerSpec(t *testing.T) {
 
 				So(func() interface{} {
 					return handlerWasCalled
-				}, utils.Eventually, 3 * time.Second, assertions.ShouldBeTrue)
+				}, utils.Eventually, 3*time.Second, assertions.ShouldBeTrue)
 			})
 
 			Convey("It calls handler with proper params", func() {
@@ -269,20 +270,20 @@ func TestFileManagerSpec(t *testing.T) {
 				createTestFile(watchFile1)
 
 				So(func() interface{} {
-					return strings.HasPrefix(handlerWasCalled, watchFile1 + " " + targetDir1)
-				}, utils.Eventually, 3 * time.Second, assertions.ShouldBeTrue)
+					return strings.HasPrefix(handlerWasCalled, watchFile1+" "+targetDir1)
+				}, utils.Eventually, 3*time.Second, assertions.ShouldBeTrue)
 			})
 
 			Convey("calls more than one handler", func() {
 				handlersCalled := 0
 
 				handler1 := func(file *models.File) (err error) {
-					handlersCalled ++
+					handlersCalled++
 					return
 				}
 
 				handler2 := func(file *models.File) (err error) {
-					handlersCalled ++
+					handlersCalled++
 					return
 				}
 
@@ -293,7 +294,7 @@ func TestFileManagerSpec(t *testing.T) {
 
 				So(func() interface{} {
 					return handlersCalled == 2
-				}, utils.Eventually, 3 * time.Second, assertions.ShouldBeTrue)
+				}, utils.Eventually, 3*time.Second, assertions.ShouldBeTrue)
 			})
 			Convey("calls handlers until error", func() {
 				handlersCalled := false
@@ -313,7 +314,7 @@ func TestFileManagerSpec(t *testing.T) {
 
 				So(func() interface{} {
 					return handlersCalled
-				}, utils.Eventually, 3 * time.Second, assertions.ShouldBeFalse)
+				}, utils.Eventually, 3*time.Second, assertions.ShouldBeFalse)
 			})
 		})
 
@@ -333,7 +334,7 @@ func TestFileManagerSpec(t *testing.T) {
 
 				So(func() interface{} {
 					return file.Load()
-				}, utils.Eventually, 3 * time.Second, assertions.ShouldBeNil)
+				}, utils.Eventually, 3*time.Second, assertions.ShouldBeNil)
 
 				So(file.Version, ShouldEqual, int64(1))
 
@@ -345,7 +346,7 @@ func TestFileManagerSpec(t *testing.T) {
 
 				So(func() interface{} {
 					return file.Load()
-				}, utils.Eventually, 3 * time.Second, assertions.ShouldBeNil)
+				}, utils.Eventually, 3*time.Second, assertions.ShouldBeNil)
 
 				files, _ = filepath.Glob(targetFile1v2)
 				So(files, ShouldNotBeNil)
@@ -361,7 +362,7 @@ func TestFileManagerSpec(t *testing.T) {
 
 				So(func() interface{} {
 					return file.Load()
-				}, utils.Eventually, 3 * time.Second, assertions.ShouldBeNil)
+				}, utils.Eventually, 3*time.Second, assertions.ShouldBeNil)
 			})
 		})
 

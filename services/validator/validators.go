@@ -1,13 +1,14 @@
 package validator
 
 import (
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
-	"log"
-	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"errors"
-	"github.com/fzakaria/goav/avformat"
 	"fmt"
+	"log"
+
+	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	"github.com/fzakaria/goav/avformat"
 )
 
 var l *log.Logger = nil
@@ -21,7 +22,7 @@ type validationFunc func(f *models.File) (passed bool, err error)
 var validations = map[string]validationFunc{
 	"passedValidation": passedValidation,
 	"failedValidation": failedValidation,
-	"checkFrameRate": checkFrameRate,
+	"checkFrameRate":   checkFrameRate,
 }
 
 func passedValidation(f *models.File) (passed bool, err error) {
@@ -37,8 +38,8 @@ func failedValidation(f *models.File) (passed bool, err error) {
 
 func checkFrameRate(f *models.File) (paased bool, err error) {
 	var (
-		ctxtFormat        *avformat.Context
-		url string
+		ctxtFormat *avformat.Context
+		url        string
 	)
 
 	// Register all formats and codecs

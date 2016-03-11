@@ -5,6 +5,7 @@ import:
   - lib/goose
 - package: github.com/DavidHuie/gomigrate
 - package: github.com/chuckpreslar/gofer
+- package: github.com/codegangsta/cli
 - package: github.com/codegangsta/negroni
 - package: github.com/fzakaria/goav
   subpackages:
@@ -14,5 +15,6 @@ import:
 - package: github.com/jinzhu/gorm
 - package: github.com/joho/godotenv
 - package: github.com/lib/pq
+- package: github.com/spf13/cobra
 - package: github.com/sthorne/reflections
 - package: github.com/unrolled/render

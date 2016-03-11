@@ -2,10 +2,13 @@ package utils_test
 
 import (
 	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 
-	"github.com/Bnei-Baruch/mms-file-manager/utils"
 	"time"
+
+	"github.com/Bnei-Baruch/mms-file-manager/utils"
+
 	"github.com/smartystreets/assertions"
 )
 
@@ -14,7 +17,7 @@ func TestConveyEventuallySpec(t *testing.T) {
 		Convey("When timeout is reached the assertion should fail", func() {
 			res := utils.Eventually(func() interface{} {
 				return false
-			}, 1 * time.Second, assertions.ShouldBeTrue)
+			}, 1*time.Second, assertions.ShouldBeTrue)
 			So(res, ShouldNotBeEmpty)
 		})
 
@@ -22,7 +25,7 @@ func TestConveyEventuallySpec(t *testing.T) {
 			res := utils.Eventually(func() interface{} {
 				time.Sleep(2 * time.Second)
 				return true
-			}, 1 * time.Second, assertions.ShouldBeTrue)
+			}, 1*time.Second, assertions.ShouldBeTrue)
 
 			// We want to check that the go func doesn't panic
 			time.Sleep(2 * time.Second)
@@ -32,16 +35,16 @@ func TestConveyEventuallySpec(t *testing.T) {
 		Convey("When timeout is not reached the assertion should not fail", func() {
 			res := utils.Eventually(func() interface{} {
 				return true
-			}, 1 * time.Second, assertions.ShouldBeTrue)
+			}, 1*time.Second, assertions.ShouldBeTrue)
 			So(res, ShouldBeEmpty)
 		})
 
 		Convey("If assertion succeeds immediatlly then the function is called exactlly once and should suuceed", func() {
 			var counter = 0
 			res := utils.Eventually(func() interface{} {
-				counter ++
+				counter++
 				return true
-			}, 1 * time.Second, assertions.ShouldBeTrue)
+			}, 1*time.Second, assertions.ShouldBeTrue)
 			So(res, ShouldBeEmpty)
 			So(counter, ShouldEqual, 1)
 		})
@@ -49,7 +52,7 @@ func TestConveyEventuallySpec(t *testing.T) {
 		Convey("assertion with parameters should work", func() {
 			res := utils.Eventually(func() interface{} {
 				return 10
-			}, 1 * time.Second, assertions.ShouldEqual, 10)
+			}, 1*time.Second, assertions.ShouldEqual, 10)
 
 			So(res, ShouldBeEmpty)
 		})
@@ -57,7 +60,7 @@ func TestConveyEventuallySpec(t *testing.T) {
 		Convey("When timeout is shorter than polling duration it should fail", func() {
 			res := utils.Eventually(func() interface{} {
 				return true
-			}, 5 * time.Millisecond, assertions.ShouldBeTrue)
+			}, 5*time.Millisecond, assertions.ShouldBeTrue)
 
 			So(res, ShouldNotBeEmpty)
 		})

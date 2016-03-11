@@ -1,11 +1,12 @@
 package workflow_manager
 
 import (
-	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
-	"github.com/Bnei-Baruch/mms-file-manager/models"
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"log"
 	"fmt"
+	"log"
+
+	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 )
 
 var l *log.Logger = nil

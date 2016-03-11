@@ -1,10 +1,9 @@
 package tasks
 
 import (
-	"github.com/codegangsta/cli"
-	"fmt"
-"github.com/Bnei-Baruch/mms-file-manager/config"
+	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"github.com/codegangsta/cli"
 	"github.com/joho/godotenv"
 )
 
@@ -41,7 +40,7 @@ func register() *cli.App {
 						godotenv.Load(env)
 						config.CheckEnv()
 
-						return automigrate()
+						//return automigrate()
 					},
 				},
 			},

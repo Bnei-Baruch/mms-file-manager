@@ -1,20 +1,21 @@
 package workflow_manager_test
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/Bnei-Baruch/mms-file-manager/models"
-	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
 	"database/sql"
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"github.com/jinzhu/gorm"
 	"log"
+	"testing"
+
+	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
 	"github.com/Bnei-Baruch/mms-file-manager/utils"
+	"github.com/jinzhu/gorm"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 var (
-	l      *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[WM-TEST] "})
-	db    *gorm.DB
+	l  *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[WM-TEST] "})
+	db *gorm.DB
 )
 
 func TestWorkflowSpec(t *testing.T) {
@@ -36,39 +37,38 @@ func TestWorkflowSpec(t *testing.T) {
 
 			//TODO: content type/line type has variations - should test all
 
-
 			Convey("When workflow is attached to file and passes validation", func() {
 				Convey("It should attach workflow to file and mark file status as HAS_WORKFLOW", func() {
 					pattern := &models.Pattern{
 						Name: "lang_arutz_yyyy-mm-dd_type_line_name.mpg",
 						Parts: models.Pairs{
-							{Key: "lang", },
+							{Key: "lang"},
 							{Key: "archive_type", Value: "arutz"},
-							{Key: "date", },
-							{Key: "content_type", },
-							{Key: "line", },
-							{Key: "name", },
+							{Key: "date"},
+							{Key: "content_type"},
+							{Key: "line"},
+							{Key: "name"},
 						},
 						Extension: "mpg",
 					}
 					pattern.Save()
 
 					workflow := &models.Workflow{
-						PatternId: sql.NullInt64{Int64: pattern.ID, Valid: true},
-						EntryPoint: "SiumAvoda",
-						ContentType: sql.NullString{String:"*", Valid: true},
-						Line: sql.NullString{String:"*", Valid: true},
+						PatternId:   sql.NullInt64{Int64: pattern.ID, Valid: true},
+						EntryPoint:  "SiumAvoda",
+						ContentType: sql.NullString{String: "*", Valid: true},
+						Line:        sql.NullString{String: "*", Valid: true},
 					}
 					err := workflow.Save()
 					So(err, ShouldBeNil)
 
 					file := &models.File{
-						FileName: "heb_arutz_2012-12-16_film_crossroads.mpg",
-						TargetDir: "targetDir",
+						FileName:   "heb_arutz_2012-12-16_film_crossroads.mpg",
+						TargetDir:  "targetDir",
 						EntryPoint: "SiumAvoda",
 						SourcePath: "path",
-						PatternId: sql.NullInt64{Int64: pattern.ID, Valid: true},
-						Status: models.HAS_PATTERN,
+						PatternId:  sql.NullInt64{Int64: pattern.ID, Valid: true},
+						Status:     models.HAS_PATTERN,
 					}
 
 					file.CreateVersion()

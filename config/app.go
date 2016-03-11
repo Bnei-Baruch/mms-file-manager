@@ -1,13 +1,14 @@
 package config
 
 import (
+	"html/template"
+	"net/http"
+	"path/filepath"
+
+	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
-	"html/template"
-	"path/filepath"
-	"net/http"
-	"github.com/Bnei-Baruch/mms-file-manager/models"
 )
 
 // Struct to hold main variables for this application.
@@ -24,7 +25,6 @@ func NewApp(root string) *App {
 
 	CheckEnv()
 
-
 	// Use negroni for middleware
 	ne := negroni.New()
 
@@ -34,10 +34,10 @@ func NewApp(root string) *App {
 	// Use Render for template. Pass in path to templates folder
 	// as well as asset helper functions.
 	re := render.New(render.Options{
-		Directory: filepath.Join(root, "templates"),
-		Layout: "layouts/layout",
+		Directory:  filepath.Join(root, "templates"),
+		Layout:     "layouts/layout",
 		Extensions: []string{".html"},
-		Funcs: []template.FuncMap{AssetHelpers(root)},
+		Funcs:      []template.FuncMap{AssetHelpers(root)},
 	})
 
 	// Establish connection to DB as specified in database.go

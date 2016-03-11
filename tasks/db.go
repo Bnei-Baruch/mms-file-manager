@@ -1,28 +1,28 @@
 package tasks
 
 import (
-	"github.com/chuckpreslar/gofer"
-	"github.com/joho/godotenv"
-	"bitbucket.org/liamstask/goose/lib/goose"
-	"github.com/DavidHuie/gomigrate"
-	_ "github.com/lib/pq"
 	"database/sql"
 	"errors"
-	"os"
 	"flag"
+	"fmt"
 	"log"
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"time"
+	"os"
 	"path/filepath"
+	"time"
+
+	"bitbucket.org/liamstask/goose/lib/goose"
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
-	"fmt"
+	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	"github.com/DavidHuie/gomigrate"
+	"github.com/chuckpreslar/gofer"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 var (
 	l *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[TASK-DB] "})
 )
-
 
 func SetupArgs(arguments []string) (args []string, err error) {
 	var flagErr flag.ErrorHandling
@@ -71,9 +71,9 @@ var DBGenerate = gofer.Register(gofer.Task{
 
 		dbConf := goose.DBConf{
 			MigrationsDir: "migrations",
-			Env: "production",
+			Env:           "production",
 			Driver: goose.DBDriver{
-				Name: "postgres",
+				Name:    "postgres",
 				OpenStr: "$DATABASE_URL",
 			},
 		}
@@ -168,10 +168,10 @@ var Kuku = gofer.Register(gofer.Task{
 	},
 })
 var DBMigrate = gofer.Register(gofer.Task{
-	Namespace:   "db",
-	Label:       "migrate",
+	Namespace:    "db",
+	Label:        "migrate",
 	Dependencies: []string{"db:automigrate"},
-	Description: "Migrates a database",
+	Description:  "Migrates a database",
 	Action: func(arguments ...string) (err error) {
 
 		if _, err = SetupArgs(arguments); err != nil {
@@ -180,12 +180,12 @@ var DBMigrate = gofer.Register(gofer.Task{
 		path := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/Bnei-Baruch/mms-file-manager/migrations")
 		dbConf := goose.DBConf{
 			MigrationsDir: path,
-			Env: os.Getenv("ENV"),
+			Env:           os.Getenv("ENV"),
 			Driver: goose.DBDriver{
-				Name: "postgres",
+				Name:    "postgres",
 				OpenStr: os.Getenv("DATABASE_URL"),
 				Dialect: goose.PostgresDialect{},
-				Import: "github.com/lib/pq",
+				Import:  "github.com/lib/pq",
 			},
 		}
 
@@ -209,10 +209,10 @@ var DBRollback = gofer.Register(gofer.Task{
 	Action: func(arguments ...string) error {
 
 		/*
-				loadError := SetupEnv(arguments)
-				if loadError != nil {
-					return errors.New("env file does not exist")
-				}
+			loadError := SetupEnv(arguments)
+			if loadError != nil {
+				return errors.New("env file does not exist")
+			}
 		*/
 
 		migrator, migError := SetupMigrator()
