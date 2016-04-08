@@ -8,12 +8,12 @@ import (
 
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	v "github.com/Bnei-Baruch/mms-file-manager/services/validator"
-	"github.com/Bnei-Baruch/mms-file-manager/utils"
+	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestValidators(t *testing.T) {
-	db := utils.SetupSpec()
+	db := test_helpers.SetupSpec()
 	fmt.Println("TestValidators start time", time.Now())
 	Convey("Workflow with list of validations", t, func() {
 		db.Exec("DELETE FROM patterns; DELETE FROM files; DELETE FROM workflows;")
@@ -60,7 +60,13 @@ func TestValidators(t *testing.T) {
 				err := v.RunValidations(file)
 				So(err, ShouldBeNil)
 				So(file.ValidationResult, ShouldNotBeNil)
-
+				/*
+					 {
+						 "checkFrameRate": {"Passed": false, "ErrorMessage": null},
+						 "failedValidation": {"Passed": false, "ErrorMessage": {}},
+						 "passedValidation": {"Passed": true, "ErrorMessage": null}
+					 }
+				*/
 				/*
 					validationResult := models.JSONB{
 						"passedValidation": models.ValidationResult{Passed: true, },

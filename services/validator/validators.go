@@ -2,7 +2,6 @@ package validator
 
 import (
 	"errors"
-	"fmt"
 	"log"
 
 	"github.com/Bnei-Baruch/mms-file-manager/models"
@@ -36,7 +35,7 @@ func failedValidation(f *models.File) (passed bool, err error) {
 	return
 }
 
-func checkFrameRate(f *models.File) (paased bool, err error) {
+func checkFrameRate(f *models.File) (passed bool, err error) {
 	var (
 		ctxtFormat *avformat.Context
 		url        string
@@ -47,20 +46,18 @@ func checkFrameRate(f *models.File) (paased bool, err error) {
 
 	// Open video file
 	if avformat.AvformatOpenInput(&ctxtFormat, f.SourcePath, nil, nil) != 0 {
-		log.Println("Error: Couldn't open file.")
-		return
+		return false, errors.New("checkFrameRate Error: Couldn't open file.")
 	}
 
 	// Retrieve stream information
 	if ctxtFormat.AvformatFindStreamInfo(nil) < 0 {
-		log.Println("Error: Couldn't find stream information.")
-		return
+		return false, errors.New("checkFrameRate Error: Couldn't find stream information.")
 	}
 
 	// Dump information about file onto standard error
 	ctxtFormat.AvDumpFormat(0, url, 0)
 
-	return
+	return true, nil
 }
 
 var RunValidations = file_manager.HandlerFunc(func(file *models.File) (err error) {
@@ -70,18 +67,19 @@ var RunValidations = file_manager.HandlerFunc(func(file *models.File) (err error
 			return
 		}
 		if err = file.Save(); err != nil {
-			l.Printf("Problem updating file -  %s : %s", file.FileName, err)
+			l.Printf("RunValidations Error: Problem updating file -  %s : %s", file.FileName, err)
 		}
 	}()
-	//TODO: workflow is not loaded!!!
 	file.Load()
 	workflow := file.Workflow
-	fmt.Println("jyjy", workflow.Validations, file.Workflow.Validations, file.WorkflowId)
 	for _, validation := range workflow.Validations {
-		fmt.Println("kuku validations", validation)
 		fn := validations[validation]
 		passed, err := fn(file)
-		file.ValidationResult[validation] = models.ValidationResult{Passed: passed, ErrorMessage: err}
+		var msg string
+		if err != nil {
+			msg = err.Error()
+		}
+		file.ValidationResult[validation] = models.ValidationResult{Passed: passed, ErrorMessage: msg}
 	}
 
 	return

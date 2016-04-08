@@ -1,17 +1,16 @@
 package models
 
 import (
+	"bytes"
+	"database/sql/driver"
+	"errors"
 	"fmt"
 	"regexp"
-	"errors"
-	"database/sql/driver"
-	"bytes"
 	"strconv"
 	"strings"
 )
 
 //Reference: https://gist.github.com/adharris/4163702
-
 
 type StringSlice []string
 
@@ -46,9 +45,7 @@ func (s *StringSlice) Scan(src interface{}) error {
 	}
 
 	asString := string(asBytes)
-	fmt.Println("kuku111", asString)
 	parsed := parseArray(asString)
-	fmt.Println("kuku222", parsed)
 	(*s) = StringSlice(parsed)
 
 	return nil
@@ -70,20 +67,20 @@ func (s *StringSlice) Scan(src interface{}) error {
 
 // construct a regexp to extract values:
 var (
-// unquoted array values must not contain: (" , \ { } whitespace NULL)
-// and must be at least one char
-	unquotedChar = `[^",\\{}\s(NULL)]`
+	// unquoted array values must not contain: (" , \ { } whitespace NULL)
+	// and must be at least one char
+	unquotedChar  = `[^",\\{}\s(NULL)]`
 	unquotedValue = fmt.Sprintf("(%s)+", unquotedChar)
 
-// quoted array values are surrounded by double quotes, can be any
-// character except " or \, which must be backslash escaped:
-	quotedChar = `[^"\\]|\\"|\\\\`
+	// quoted array values are surrounded by double quotes, can be any
+	// character except " or \, which must be backslash escaped:
+	quotedChar  = `[^"\\]|\\"|\\\\`
 	quotedValue = fmt.Sprintf("\"(%s)*\"", quotedChar)
 
-// an array value may be either quoted or unquoted:
+	// an array value may be either quoted or unquoted:
 	arrayValue = fmt.Sprintf("(?P<value>(%s|%s))", unquotedValue, quotedValue)
 
-// Array values are separated with a comma IF there is more than one value:
+	// Array values are separated with a comma IF there is more than one value:
 	arrayExp = regexp.MustCompile(fmt.Sprintf("((%s)(,)?)", arrayValue))
 
 	valueIndex int
@@ -112,4 +109,3 @@ func parseArray(array string) []string {
 	}
 	return results
 }
-

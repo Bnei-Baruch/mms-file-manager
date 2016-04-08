@@ -25,7 +25,7 @@ const (
 
 type ValidationResult struct {
 	Passed       bool
-	ErrorMessage error
+	ErrorMessage string
 }
 
 //type ValidationResults map[string]ValidationResult
@@ -49,8 +49,13 @@ type File struct {
 	ValidationResult JSONB         `sql:"type:jsonb"` // map[string] struct{passed bool, err_message string}
 }
 
-func (f *File) Load() error {
-	return db.Where(f).First(f).Error
+func (f *File) Load() (err error) {
+	err = db.Where(f).Preload("Workflow").Preload("Pattern").First(f).Error
+	if f.ValidationResult == nil {
+		f.ValidationResult = make(JSONB)
+	}
+
+	return err
 }
 
 func (f *File) Save() error {

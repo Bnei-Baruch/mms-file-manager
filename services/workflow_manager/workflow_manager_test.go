@@ -8,7 +8,7 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
-	"github.com/Bnei-Baruch/mms-file-manager/utils"
+	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
 	"github.com/jinzhu/gorm"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -19,7 +19,7 @@ var (
 )
 
 func TestWorkflowSpec(t *testing.T) {
-	db = utils.SetupSpec()
+	db = test_helpers.SetupSpec()
 
 	Convey("Setup", t, func() {
 

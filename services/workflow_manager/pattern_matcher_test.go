@@ -5,7 +5,7 @@ import (
 
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
-	"github.com/Bnei-Baruch/mms-file-manager/utils"
+	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -331,7 +331,7 @@ var fileNames = []string{
 }
 
 func TestPatternSpec(t *testing.T) {
-	db = utils.SetupSpec()
+	db = test_helpers.SetupSpec()
 	SetDefaultFailureMode(FailureHalts)
 	Convey("Setup", t, func() {
 		Convey("Subject: Pattern matching", func() {
