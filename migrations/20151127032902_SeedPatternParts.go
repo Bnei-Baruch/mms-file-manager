@@ -6,6 +6,7 @@ import (
 
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"github.com/palantir/stacktrace"
 )
 
 // Up is executed when this migration is applied
@@ -29,7 +30,7 @@ func Up_20151127032902(txn *sql.Tx) {
 
 	for _, pt := range pts {
 		if err := pt.Save(); err != nil {
-			log.Panicln("Unable to save pattern", pt, err)
+			log.Panicln(stacktrace.Propagate(err, "Unable to save pattern", pt))
 		}
 	}
 }

@@ -47,11 +47,13 @@ type File struct {
 	Workflow         Workflow
 	WorkflowId       sql.NullInt64 `sql:"index"`
 	ValidationResult JSONB         `sql:"type:jsonb"` // map[string] struct{passed bool, err_message string}
+	Exif             Exif          `sql:"type:jsonb"`
 }
 
 func (f *File) Load() (err error) {
 	err = db.Where(f).Preload("Workflow").Preload("Pattern").First(f).Error
-	if f.ValidationResult == nil {
+	//log.Println(stacktrace.Propagate(err, "KUKU111: %#v\n%s", f, debug.Stack()))
+	if err == nil && f.ValidationResult == nil {
 		f.ValidationResult = make(JSONB)
 	}
 

@@ -44,7 +44,9 @@ func TestValidators(t *testing.T) {
 			TargetDir:  "targetDir",
 			EntryPoint: "SiumAvoda",
 			SourcePath: "path",
-			FullPath:   "../../test_files/heb_o_rav_achana_2015-10-13_lesson.mp4",
+			//FullPath:   "../../test_files/heb_o_rav_achana_2015-10-13_lesson.mp4",
+			//FullPath:   "../../test_files/heb_o_rav_2016-02-25_promo_congress_pre-roll.mpg",
+			FullPath:   "../../test_files/mlt_o_rav_achana_2016-04-28_lesson.mpg",
 			PatternId:  sql.NullInt64{Int64: pattern.ID, Valid: true},
 			WorkflowId: sql.NullInt64{Int64: workflow.ID, Valid: true},
 			Status:     models.HAS_WORKFLOW,
@@ -54,28 +56,87 @@ func TestValidators(t *testing.T) {
 		file.CreateVersion()
 
 		Convey("When there is an existing validation", func() {
-			workflow.Validations = models.StringSlice{"passedValidation", "failedValidation", "checkFrameRate"}
+			workflow.Validations = models.StringSlice{"passedValidation", "failedValidation"}
 			workflow.Save()
-			Convey("It should run all workflow's validations", func() {
+			Convey("It should run all workflow's validations as expected", func() {
 				err := v.RunValidations(file)
 				So(err, ShouldBeNil)
 				So(file.ValidationResult, ShouldNotBeNil)
 				/*
 					 {
-						 "checkFrameRate": {"Passed": false, "ErrorMessage": null},
 						 "failedValidation": {"Passed": false, "ErrorMessage": {}},
 						 "passedValidation": {"Passed": true, "ErrorMessage": null}
 					 }
 				*/
-				/*
-					validationResult := models.JSONB{
-						"passedValidation": models.ValidationResult{Passed: true, },
-						"failedValidation": models.ValidationResult{Passed: false, ErrorMessage: "error"},
-					}
-				*/
+				expectedValidationResult := models.JSONB{
+					"passedValidation": models.ValidationResult{Passed: true, ErrorMessage: ""},
+					"failedValidation": models.ValidationResult{Passed: false, ErrorMessage: "error"},
+				}
+				fmt.Printf("%v", file.ValidationResult["passedValidation"])
 
-				//TODO: So(validationCount(file.ValidationResult), ShouldEqual, len(workflow.GetValidations()))
-				//TODO: Test that validation names are equal to...
+				So(file.ValidationResult["passedValidation"].(models.ValidationResult).Passed, ShouldEqual, expectedValidationResult["passedValidation"].(models.ValidationResult).Passed)
+				So(file.ValidationResult["failedValidation"].(models.ValidationResult).Passed, ShouldEqual, expectedValidationResult["failedValidation"].(models.ValidationResult).Passed)
+				So(file.ValidationResult["passedValidation"].(models.ValidationResult).ErrorMessage, ShouldEqual, expectedValidationResult["passedValidation"].(models.ValidationResult).ErrorMessage)
+				So(file.ValidationResult["failedValidation"].(models.ValidationResult).ErrorMessage, ShouldEqual, expectedValidationResult["failedValidation"].(models.ValidationResult).ErrorMessage)
+			})
+			Convey("it should validate Exif properties correctly", func() {
+				workflow.Validations = models.StringSlice{"checkExif"}
+				workflow.Save()
+				testConfig := []struct {
+					fileName string
+					passed   bool
+					exif     models.Exif
+				}{
+					{"../../test_files/mlt_o_rav_achana_2016-04-28_lesson.mpg", true, models.Exif{
+						FileType:          "MPEG",
+						FileTypeExtension: "mpg",
+						ImageWidth:        720,
+						ImageHeight:       576,
+						AspectRatio:       "16:9, 625 line, PAL",
+						FrameRate:         "25 fps",
+						VideoBitrate:      "12 Mbps",
+						MPEGAudioVersion:  1,
+						AudioLayer:        2,
+						AudioBitrate:      "224 kbps",
+						SampleRate:        48000,
+						OriginalMedia:     true,
+					}},
+					{"../../test_files/heb_o_rav_2016-02-25_promo_congress_pre-roll.mpg", false, models.Exif{
+						FileType:          "MPEG",
+						FileTypeExtension: "mpg",
+						ImageWidth:        730,
+						ImageHeight:       576,
+						AspectRatio:       "16:9, 625 line, PAL",
+						FrameRate:         "25 fps",
+						VideoBitrate:      "12 Mbps",
+						MPEGAudioVersion:  1,
+						AudioLayer:        2,
+						AudioBitrate:      "224 kbps",
+						SampleRate:        48000,
+						OriginalMedia:     true,
+					}},
+				}
+
+				for _, t := range testConfig {
+					file := &models.File{
+						FileName:   "heb_arutz_2012-12-16_film_crossroads.mpg",
+						TargetDir:  "targetDir",
+						EntryPoint: "SiumAvoda",
+						SourcePath: "path",
+						FullPath:   t.fileName,
+						PatternId:  sql.NullInt64{Int64: pattern.ID, Valid: true},
+						WorkflowId: sql.NullInt64{Int64: workflow.ID, Valid: true},
+						Status:     models.HAS_WORKFLOW,
+						Attributes: models.JSONB{"date": "2012-12-16", "lang": "heb", "line": "crossroads", "archive_type": "arutz", "content_type": "film"},
+					}
+					file.CreateVersion()
+					workflow.Exif = t.exif
+					workflow.Save()
+					err := v.RunValidations(file)
+					So(err, ShouldBeNil)
+					So(file.ValidationResult, ShouldNotBeNil)
+					So(file.ValidationResult["checkExif"].(models.ValidationResult).Passed, ShouldEqual, t.passed)
+				}
 			})
 		})
 		/*

@@ -3,29 +3,33 @@ package models
 import (
 	"database/sql"
 	"reflect"
+
 	"github.com/sthorne/reflections"
 )
 
-type Workflow struct {
-	Model
-	Pattern     Pattern
-	PatternId   sql.NullInt64 `sql:"index"`
-	EntryPoint  string
-	ContentType sql.NullString
-	Line        sql.NullString
-	Validations StringSlice `sql:"type:varchar[]"`
-	//	MaterialType
-	//	ArchiveType
-	//	Language(s)
-	//	HasName
-	//	RequireCheck
-}
-type LookupField interface {
-	GetName() string
-	Exists() (bool, error)
-}
+type (
+	Workflow struct {
+		Model
+		Pattern     Pattern
+		PatternId   sql.NullInt64 `sql:"index"`
+		EntryPoint  string
+		ContentType sql.NullString
+		Line        sql.NullString
+		Validations StringSlice `sql:"type:varchar[]"`
+		Exif        Exif        `sql:"type:jsonb"`
+		//	MaterialType
+		//	ArchiveType
+		//	Language(s)
+		//	HasName
+		//	RequireCheck
+	}
+	Workflows []Workflow
 
-type Workflows []Workflow
+	LookupField interface {
+		GetName() string
+		Exists() (bool, error)
+	}
+)
 
 func (w *Workflow) Save() error {
 	return db.Save(w).Error
@@ -35,7 +39,7 @@ func (ws *Workflows) detectWorkflowsBy(fieldName string, checkInterface LookupFi
 	result := make(map[int]Workflows, 3)
 	checkValue := checkInterface.GetName()
 	var (
-		check bool
+		check         bool
 		workflowValue interface{}
 	)
 
@@ -46,7 +50,7 @@ func (ws *Workflows) detectWorkflowsBy(fieldName string, checkInterface LookupFi
 			return
 		}
 
-		switch (workflowValue) {
+		switch workflowValue {
 		case "": // Priority 3;
 			result[3] = append(result[3], w)
 		case "*": // Priority 2

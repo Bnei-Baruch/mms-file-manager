@@ -1,13 +1,21 @@
 package validator
 
 import (
-	"errors"
 	"log"
+
+	"github.com/go-errors/errors"
+
+	"os/exec"
+
+	"encoding/json"
+	"fmt"
+
+	"reflect"
 
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	"github.com/fzakaria/goav/avformat"
+	"github.com/sthorne/reflections"
 )
 
 var l *log.Logger = nil
@@ -16,12 +24,14 @@ func init() {
 	l = logger.InitLogger(&logger.LogParams{LogPrefix: "[VAL] "})
 }
 
-type validationFunc func(f *models.File) (passed bool, err error)
+type (
+	validationFunc func(f *models.File) (passed bool, err error)
+)
 
 var validations = map[string]validationFunc{
 	"passedValidation": passedValidation,
 	"failedValidation": failedValidation,
-	"checkFrameRate":   checkFrameRate,
+	"checkExif":        checkExif,
 }
 
 func passedValidation(f *models.File) (passed bool, err error) {
@@ -35,29 +45,42 @@ func failedValidation(f *models.File) (passed bool, err error) {
 	return
 }
 
-func checkFrameRate(f *models.File) (passed bool, err error) {
-	var (
-		ctxtFormat *avformat.Context
-		url        string
-	)
+func checkExif(f *models.File) (passed bool, err error) {
 
-	// Register all formats and codecs
-	avformat.AvRegisterAll()
-
-	// Open video file
-	if avformat.AvformatOpenInput(&ctxtFormat, f.SourcePath, nil, nil) != 0 {
-		return false, errors.New("checkFrameRate Error: Couldn't open file.")
+	var cmdOut []byte
+	args := []string{"-j", f.FullPath}
+	if cmdOut, err = exec.Command("exiftool", args...).Output(); err != nil {
+		return false, errors.Errorf("There was an error retrieving file %s metadata: %s", f.FullPath, err)
 	}
 
-	// Retrieve stream information
-	if ctxtFormat.AvformatFindStreamInfo(nil) < 0 {
-		return false, errors.New("checkFrameRate Error: Couldn't find stream information.")
+	var exifs []models.Exif
+	if err = json.Unmarshal(cmdOut, &exifs); err != nil {
+		return false, errors.Errorf("There was an error parsing file %s metadata: %s", f.FullPath, err)
+	}
+	f.Exif = exifs[0]
+	f.Save()
+	workflowExif, _ := reflections.Items(f.Workflow.Exif)
+
+	var checkError string = ""
+	for fieldName, fieldValue := range workflowExif {
+		if isZeroOfUnderlyingType(fieldValue) {
+			continue
+		}
+		if value, err := reflections.GetField(f.Exif, fieldName); err != nil {
+			return false, errors.Errorf("There was an error validating Exif for file %s. Field '%s' doesn't exist:\n %s", f.FullPath, fieldName, err)
+		} else {
+			if value != fieldValue {
+				checkError += fmt.Sprintf("Field '%s' has value '%v', but '%v' was expected\n", fieldName, value, fieldValue)
+			}
+		}
+
 	}
 
-	// Dump information about file onto standard error
-	ctxtFormat.AvDumpFormat(0, url, 0)
-
-	return true, nil
+	if checkError != "" {
+		return false, errors.Errorf("There was an error validating Exif for file %s.\n%s", f.FullPath, checkError)
+	} else {
+		return true, nil
+	}
 }
 
 var RunValidations = file_manager.HandlerFunc(func(file *models.File) (err error) {
@@ -85,3 +108,7 @@ var RunValidations = file_manager.HandlerFunc(func(file *models.File) (err error
 	return
 
 })
+
+func isZeroOfUnderlyingType(x interface{}) bool {
+	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
+}
