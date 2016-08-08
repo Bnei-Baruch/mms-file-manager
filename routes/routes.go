@@ -2,21 +2,29 @@ package routes
 
 import (
 	"github.com/Bnei-Baruch/mms-file-manager/config"
-	"github.com/gorilla/schema"
+	"net/http"
 )
 
 var App *config.App
-var decoder = schema.NewDecoder()
 
 func Setup(app *config.App) {
 
 	App = app
 
-	// Define your routes here:
+	// It's important that this is before your catch-all route ("/")
+	//api := App.Router.PathPrefix("/api/v1/").Subrouter()
+	//api.HandleFunc("/users", GetUsersHandler).Methods("GET")
+	// Optional: Use a custom 404 handler for our API paths.
+	// api.NotFoundHandler = JSONNotFound
 
-	App.Router.HandleFunc("/", HomeIndex).Methods("GET")
+	// Serve static assets directly.
+	App.Router.PathPrefix("/assets/dist/").Handler(
+		http.StripPrefix("/assets/dist/", http.FileServer(http.Dir("assets/dist"))))
 
-	App.Router.HandleFunc("/posts", PostsIndex).Methods("GET")
-	App.Router.HandleFunc("/posts/new", PostsNew).Methods("GET")
-	App.Router.HandleFunc("/posts", PostsCreate).Methods("POST")
+	// Catch-all: Serve our JavaScript application's entry-point (index.html).
+	App.Router.PathPrefix("/").HandlerFunc(IndexHandler)
+}
+
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "assets/dist/index.html")
 }

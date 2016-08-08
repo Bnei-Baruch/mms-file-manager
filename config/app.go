@@ -1,10 +1,6 @@
 package config
 
 import (
-	"html/template"
-	"net/http"
-	"path/filepath"
-
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
@@ -34,10 +30,8 @@ func NewApp(root string) *App {
 	// Use Render for template. Pass in path to templates folder
 	// as well as asset helper functions.
 	re := render.New(render.Options{
-		Directory:  filepath.Join(root, "templates"),
-		Layout:     "layouts/layout",
-		Extensions: []string{".html"},
-		Funcs:      []template.FuncMap{AssetHelpers(root)},
+		IndentJSON:  true,
+		StreamingJSON: true,
 	})
 
 	// Establish connection to DB as specified in database.go
@@ -47,8 +41,6 @@ func NewApp(root string) *App {
 	// Add middleware to the stack
 	ne.Use(negroni.NewRecovery())
 	ne.Use(negroni.NewLogger())
-	ne.Use(NewAssetHeaders())
-	ne.Use(negroni.NewStatic(http.Dir("public")))
 	ne.UseHandler(ro)
 
 	// Return a new App struct with all these things.

@@ -12,3 +12,5 @@ mms-file-manager
 debug
 **/*.cov
 vendor/
+
+npm-debug.log
