@@ -1,9 +1,8 @@
-node_modules
+.idea
 gin-bin
 .DS_Store
-.env.test
 .env
-.idea
+.env.test
 **/*.coverprofile
 tmp/
 runner.conf
@@ -13,4 +12,7 @@ debug
 **/*.cov
 vendor/
 
+node_modules
+assets/coverage
+assets/dist
 npm-debug.log
