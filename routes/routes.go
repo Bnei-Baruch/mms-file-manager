@@ -12,8 +12,8 @@ func Setup(app *config.App) {
 	App = app
 
 	// It's important that this is before your catch-all route ("/")
-	//api := App.Router.PathPrefix("/api/v1/").Subrouter()
-	//api.HandleFunc("/users", GetUsersHandler).Methods("GET")
+	// api := App.Router.PathPrefix("/api/v1/").Subrouter()
+	// api.HandleFunc("/users", GetUsersHandler).Methods("GET")
 	// Optional: Use a custom 404 handler for our API paths.
 	// api.NotFoundHandler = JSONNotFound
 
