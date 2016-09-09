@@ -5,12 +5,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/steinbacher/goose"
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
-	"github.com/joho/godotenv"
-	"github.com/spf13/cobra"
 	"github.com/jinzhu/gorm"
+	"github.com/joho/godotenv"
+	"github.com/pressly/goose"
+	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -45,23 +45,25 @@ var dbGenerate = &cobra.Command{
 			LoadEnv(false)
 		}
 
-		dbConf := goose.DBConf{
-			MigrationsDir: "migrations",
-			Driver: goose.DBDriver{
-				Name: "postgres",
-				DSN:  "$DATABASE_URL",
-			},
-		}
+		/*
+			dbConf := goose.DBConf{
+				MigrationsDir: "migrations",
+				Driver: goose.DBDriver{
+					Name: "postgres",
+					DSN:  "$DATABASE_URL",
+				},
+			}
+		*/
 
 		if len(args) < 1 {
 			l.Fatal("create: migration name required")
 		}
 
-		if err := os.MkdirAll(dbConf.MigrationsDir, 0777); err != nil {
+		if err := os.MkdirAll("migrations", 0777); err != nil {
 			l.Fatal(err)
 		}
 
-		n, err := goose.CreateMigration(args[0], migrationType, dbConf.MigrationsDir, time.Now())
+		n, err := goose.CreateMigration(args[0], migrationType, "migrations", time.Now())
 		if err != nil {
 			l.Fatal(err)
 		}
@@ -114,22 +116,24 @@ var dbMigrate = &cobra.Command{
 		}
 
 		path := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/Bnei-Baruch/mms-file-manager/migrations")
-		dbConf := goose.DBConf{
-			MigrationsDir: path,
-			Driver: goose.DBDriver{
-				Name:    "postgres",
-				DSN:     os.Getenv("DATABASE_URL"),
-				Dialect: goose.PostgresDialect{},
-				Import:  "github.com/lib/pq",
-			},
-		}
+		/*
+			dbConf := goose.DBConf{
+				MigrationsDir: path,
+				Driver: goose.DBDriver{
+					Name:    "postgres",
+					DSN:     os.Getenv("DATABASE_URL"),
+					Dialect: goose.PostgresDialect{},
+					Import:  "github.com/lib/pq",
+				},
+			}
+		*/
 
 		var target int64
-		target, err = goose.GetMostRecentDBVersion(dbConf.MigrationsDir)
+		target, err = goose.GetMostRecentDBVersion(path)
 		if err != nil {
 			l.Fatal(err)
 		}
-		if err = goose.RunMigrations(&dbConf, dbConf.MigrationsDir, target); err != nil {
+		if err = goose.RunMigrations(db.DB(), path, target); err != nil {
 			l.Fatal(err)
 		}
 	},

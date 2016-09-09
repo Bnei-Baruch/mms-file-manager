@@ -4,14 +4,14 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/config"
+	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/palantir/stacktrace"
 )
 
 // Up is executed when this migration is applied
-func Up_20151127032902(txn *sql.Tx, db *sql.DB) {
-	gdb := config.NewDB(db)
+func Up_20151127032902(txn *sql.Tx) {
+	gdb := config.NewDB()
 	models.New(gdb)
 	defer gdb.Close()
 

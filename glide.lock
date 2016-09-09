@@ -1,69 +1,106 @@
-hash: a84ba83e747a327642695922c298aef0a1e70e5b6d2ce54c306347562e8a71e6
-updated: 2016-08-12T07:58:19.577650474+03:00
+hash: 9e32eaf9b87ee46c485125a0d9f5823dbb75e56e7c531d1e2b297126785328e5
+updated: 2016-09-09T05:23:31.110520355+03:00
 imports:
 - name: github.com/chuckpreslar/gofer
   version: a2b42d8f5abd604f382df8c9444a48b4afc6ce0e
 - name: github.com/DavidHuie/gomigrate
-  version: eb6ae245bc66c1f5b0cef2e4135774794d4833d7
+  version: 4004e6142040f5d622e9d2be6e833a4652741571
 - name: github.com/fzakaria/goav
   version: 16d20369874dd012ec6707dccb16f36a2efcbc17
   subpackages:
   - avformat
 - name: github.com/go-errors/errors
   version: a41850380601eeb43f4350f7d17c6bbd8944aaf8
-- name: github.com/go-sql-driver/mysql
-  version: 0f2db9e6c9cff80a97ca5c2c5096242cc1554e16
 - name: github.com/gorilla/context
-  version: 1ea25387ff6f684839d82767c1733ff4d4d15d0a
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: 147a95f5e36a65f1c7b29440b9b0283aab154693
+  version: 0a192a193177452756c362c20087ddafcf6829c4
 - name: github.com/gorilla/schema
-  version: ddf016c1034e9cfd3eb5b276f626c8f04d765f6f
+  version: 0164a00ab4cd01d814d8cd5bf63fd9fcea30e23b
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/jinzhu/gorm
-  version: f8377d80bf0d73b981c7ec39b7483776feedf79b
+  version: 02f6ae3c4ed211472b0492cee02ff3ddfdc1830d
 - name: github.com/jinzhu/inflection
-  version: 3272df6c21d04180007eb3349844c89a3856bc25
+  version: 74387dc39a75e970e7a3ae6a3386b5bd2e5c5cff
 - name: github.com/joho/godotenv
   version: 4ed13390c0acd2ff4e371e64d8b97c8954138243
 - name: github.com/kylelemons/go-gypsy
-  version: 42fc2c7ee9b8bd0ff636cd2d7a8c0a49491044c5
+  version: 08cad365cd28a7fba23bb1e57aa43c5e18ad8bb8
   subpackages:
   - yaml
 - name: github.com/lib/pq
-  version: e182dc4027e2ded4b19396d638610f2653295f36
+  version: 50761b0867bd1d9d069276790bcd4a3bccf2324a
   subpackages:
-  - hstore
   - oid
-- name: github.com/mattn/go-sqlite3
-  version: 45f056ca8f5ef4ee3f68796167a0a0e6a6214813
 - name: github.com/palantir/stacktrace
   version: 5a74c62b11cfd8b2cb9374c785dd965d9a2b4e53
   subpackages:
   - cleanpath
 - name: github.com/smartystreets/goconvey
   version: d4c757aa9afd1e2fc1832aaab209b5794eb336e1
-- name: github.com/spf13/cobra
-  version: 65a708cee0a4424f4e353d031ce440643e312f92
-- name: github.com/spf13/pflag
-  version: 7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7
-- name: github.com/steinbacher/goose
-  version: dc457c3195032dd1c3848e21dc95ed02c92f8cfa
   subpackages:
-  - lib/goose
+  - convey
+  - convey/gotest
+  - convey/reporting
+- name: github.com/spf13/cobra
+  version: 9c28e4bbd74e5c3ed7aacbc552b2cab7cfdfe744
+- name: github.com/spf13/pflag
+  version: 6fd2ff4ff8dfcdf5556fbdc0ac0284408274b1a7
 - name: github.com/sthorne/reflections
   version: 381162e6b62f31bdcc9981afaf1e24104a593be9
 - name: github.com/unrolled/render
-  version: 198ad4d8b8a4612176b804ca10555b222a086b40
+  version: 3f4913244021dede105b62caecfb01f0c1eebeda
 - name: github.com/urfave/cli
-  version: 168c95418e66e019fe17b8f4f5c45aa62ff80e23
+  version: c723b19a84af34d905773672ffa1b8ead802e505
 - name: github.com/urfave/negroni
-  version: 6edff56736fa7bd546812f149e8cdaae61e5a38f
-- name: github.com/ziutek/mymysql
-  version: e5d54ebfda3f8a15e7b192b65c2aa10cb4fd7e04
+  version: 5d815f907a182b6131cc88af3f17f898b93142a5
+testImports:
+- name: github.com/gopherjs/gopherjs
+  version: 05b9d708f1c9b4cbe71da718f3ce23665031021a
   subpackages:
-  - godrv
-  - mysql
-  - native
-devImports: []
+  - js
+- name: github.com/jtolds/gls
+  version: 8ddce2a84170772b95dd5d576c48d517b22cac63
+- name: github.com/onsi/ginkgo
+  version: 7b6efc7d7b052568b49ac02d3141c9d7a5a494a4
+  subpackages:
+  - config
+  - internal/codelocation
+  - internal/containernode
+  - internal/failer
+  - internal/leafnodes
+  - internal/remote
+  - internal/spec
+  - internal/specrunner
+  - internal/suite
+  - internal/testingtproxy
+  - internal/writer
+  - reporters
+  - reporters/stenographer
+  - types
+- name: github.com/onsi/gomega
+  version: b48c9a8b2644326d0a44eaaacc8d83e35174a05d
+  subpackages:
+  - format
+  - internal/assertion
+  - internal/asyncassertion
+  - internal/oraclematcher
+  - internal/testingtsupport
+  - matchers
+  - matchers/support/goraph/bipartitegraph
+  - matchers/support/goraph/edge
+  - matchers/support/goraph/node
+  - matchers/support/goraph/util
+  - types
+- name: github.com/smartystreets/assertions
+  version: 2063fd1cc7c975db70502811a34b06ad034ccdf2
+  subpackages:
+  - internal/go-render/render
+  - internal/oglematchers
+- name: golang.org/x/sys
+  version: 30de6d19a3bd89a5f38ae4028e23aaa5582648af
+  subpackages:
+  - unix
+- name: gopkg.in/yaml.v2
+  version: e4d366fc3c7938e2958e662b4258c7a89e1f0e3e
