@@ -3,7 +3,7 @@ package tasks
 import (
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/joho/godotenv"
 )
 

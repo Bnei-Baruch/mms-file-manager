@@ -5,19 +5,35 @@ import (
 	"path/filepath"
 	"time"
 
-	"bitbucket.org/liamstask/goose/lib/goose"
+	"github.com/steinbacher/goose"
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
+	"github.com/jinzhu/gorm"
 )
 
 func init() {
 	RootCmd.AddCommand(dbGenerate)
 	RootCmd.AddCommand(dbEmpty)
 	RootCmd.AddCommand(dbMigrate)
+	dbGenerate.PersistentFlags().StringVar(&migrationType, "type", "go", "migration type (go|sql)")
 }
 
+func RegisterDb(gdb *gorm.DB) {
+	db = gdb
+}
+
+func LoadEnv(loadDB bool) {
+	godotenv.Load(Env)
+	config.CheckEnv()
+
+	if loadDB {
+		db = config.NewDB()
+	}
+}
+
+var db *gorm.DB
 var migrationType string
 
 var dbGenerate = &cobra.Command{
@@ -25,15 +41,15 @@ var dbGenerate = &cobra.Command{
 	Short: "Generate new migration file",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		godotenv.Load(Env)
-		config.CheckEnv()
+		if db == nil {
+			LoadEnv(false)
+		}
 
 		dbConf := goose.DBConf{
 			MigrationsDir: "migrations",
-			Env:           "production",
 			Driver: goose.DBDriver{
-				Name:    "postgres",
-				OpenStr: "$DATABASE_URL",
+				Name: "postgres",
+				DSN:  "$DATABASE_URL",
 			},
 		}
 
@@ -63,12 +79,9 @@ var dbEmpty = &cobra.Command{
 	Use:   "db:empty",
 	Short: "Empty the database",
 	Run: func(cmd *cobra.Command, args []string) {
-
-		godotenv.Load(Env)
-		config.CheckEnv()
-
-		db := config.NewDB()
-		defer db.Close()
+		if db == nil {
+			LoadEnv(true)
+		}
 
 		if err := db.Exec(`
 			DROP SCHEMA public CASCADE;
@@ -83,11 +96,9 @@ var dbMigrate = &cobra.Command{
 	Use:   "db:migrate",
 	Short: "Migrate the databse to the latest version",
 	Run: func(cmd *cobra.Command, args []string) {
-		godotenv.Load(Env)
-		config.CheckEnv()
-
-		db := config.NewDB()
-		defer db.Close()
+		if db == nil {
+			LoadEnv(true)
+		}
 
 		var err error
 		if err = db.AutoMigrate(
@@ -105,10 +116,9 @@ var dbMigrate = &cobra.Command{
 		path := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/Bnei-Baruch/mms-file-manager/migrations")
 		dbConf := goose.DBConf{
 			MigrationsDir: path,
-			Env:           os.Getenv("ENV"),
 			Driver: goose.DBDriver{
 				Name:    "postgres",
-				OpenStr: os.Getenv("DATABASE_URL"),
+				DSN:     os.Getenv("DATABASE_URL"),
 				Dialect: goose.PostgresDialect{},
 				Import:  "github.com/lib/pq",
 			},
@@ -123,8 +133,4 @@ var dbMigrate = &cobra.Command{
 			l.Fatal(err)
 		}
 	},
-}
-
-func init() {
-	dbGenerate.PersistentFlags().StringVar(&migrationType, "type", "go", "migration type (go|sql)")
 }

@@ -1,26 +1,16 @@
-hash: 4e5547bbac126a804e7633fa4fa8b8c73f99fee347c2d769feb88d446cd94f23
-updated: 2016-03-09T05:10:18.968339903+02:00
+hash: a84ba83e747a327642695922c298aef0a1e70e5b6d2ce54c306347562e8a71e6
+updated: 2016-08-12T07:58:19.577650474+03:00
 imports:
-- name: bitbucket.org/liamstask/goose
-  version: 8488cc47d90c8a502b1c41a462a6d9cc8ee0a895
-  subpackages:
-  - lib/goose
 - name: github.com/chuckpreslar/gofer
   version: a2b42d8f5abd604f382df8c9444a48b4afc6ce0e
-- name: github.com/codegangsta/cli
-  version: a2943485b110df8842045ae0600047f88a3a56a1
-- name: github.com/codegangsta/negroni
-  version: c7477ad8e330bef55bf1ebe300cf8aa67c492d1b
 - name: github.com/DavidHuie/gomigrate
   version: eb6ae245bc66c1f5b0cef2e4135774794d4833d7
 - name: github.com/fzakaria/goav
   version: 16d20369874dd012ec6707dccb16f36a2efcbc17
   subpackages:
   - avformat
-- name: github.com/giorgisio/goav
-  version: b08101834209c6a2e3cdd21ea30c3a60614ce3a1
-  subpackages:
-  - avcodec
+- name: github.com/go-errors/errors
+  version: a41850380601eeb43f4350f7d17c6bbd8944aaf8
 - name: github.com/go-sql-driver/mysql
   version: 0f2db9e6c9cff80a97ca5c2c5096242cc1554e16
 - name: github.com/gorilla/context
@@ -29,6 +19,8 @@ imports:
   version: 147a95f5e36a65f1c7b29440b9b0283aab154693
 - name: github.com/gorilla/schema
   version: ddf016c1034e9cfd3eb5b276f626c8f04d765f6f
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/jinzhu/gorm
   version: f8377d80bf0d73b981c7ec39b7483776feedf79b
 - name: github.com/jinzhu/inflection
@@ -46,14 +38,28 @@ imports:
   - oid
 - name: github.com/mattn/go-sqlite3
   version: 45f056ca8f5ef4ee3f68796167a0a0e6a6214813
+- name: github.com/palantir/stacktrace
+  version: 5a74c62b11cfd8b2cb9374c785dd965d9a2b4e53
+  subpackages:
+  - cleanpath
+- name: github.com/smartystreets/goconvey
+  version: d4c757aa9afd1e2fc1832aaab209b5794eb336e1
 - name: github.com/spf13/cobra
   version: 65a708cee0a4424f4e353d031ce440643e312f92
 - name: github.com/spf13/pflag
   version: 7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7
+- name: github.com/steinbacher/goose
+  version: dc457c3195032dd1c3848e21dc95ed02c92f8cfa
+  subpackages:
+  - lib/goose
 - name: github.com/sthorne/reflections
   version: 381162e6b62f31bdcc9981afaf1e24104a593be9
 - name: github.com/unrolled/render
   version: 198ad4d8b8a4612176b804ca10555b222a086b40
+- name: github.com/urfave/cli
+  version: 168c95418e66e019fe17b8f4f5c45aa62ff80e23
+- name: github.com/urfave/negroni
+  version: 6edff56736fa7bd546812f149e8cdaae61e5a38f
 - name: github.com/ziutek/mymysql
   version: e5d54ebfda3f8a15e7b192b65c2aa10cb4fd7e04
   subpackages:

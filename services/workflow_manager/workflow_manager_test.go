@@ -1,15 +1,15 @@
 package workflow_manager_test
 
 import (
-	"database/sql"
 	"log"
 	"testing"
 
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
-	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
 	"github.com/jinzhu/gorm"
+	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
+	"database/sql"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"bitbucket.org/liamstask/goose/lib/goose"
+	"github.com/steinbacher/goose"
 	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
@@ -71,10 +71,9 @@ var DBGenerate = gofer.Register(gofer.Task{
 
 		dbConf := goose.DBConf{
 			MigrationsDir: "migrations",
-			Env:           "production",
 			Driver: goose.DBDriver{
 				Name:    "postgres",
-				OpenStr: "$DATABASE_URL",
+				DSN: "$DATABASE_URL",
 			},
 		}
 
@@ -180,10 +179,9 @@ var DBMigrate = gofer.Register(gofer.Task{
 		path := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/Bnei-Baruch/mms-file-manager/migrations")
 		dbConf := goose.DBConf{
 			MigrationsDir: path,
-			Env:           os.Getenv("ENV"),
 			Driver: goose.DBDriver{
 				Name:    "postgres",
-				OpenStr: os.Getenv("DATABASE_URL"),
+				DSN:     os.Getenv("DATABASE_URL"),
 				Dialect: goose.PostgresDialect{},
 				Import:  "github.com/lib/pq",
 			},

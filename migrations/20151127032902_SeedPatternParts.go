@@ -4,16 +4,16 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
+	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/palantir/stacktrace"
 )
 
 // Up is executed when this migration is applied
-func Up_20151127032902(txn *sql.Tx) {
-	db := config.NewDB()
-	models.New(db)
-	defer db.Close()
+func Up_20151127032902(txn *sql.Tx, db *sql.DB) {
+	gdb := config.NewDB(db)
+	models.New(gdb)
+	defer gdb.Close()
 
 	pts := models.PatternParts{
 		models.PatternPart{Key: "lecturer", Value: `rav|norav`},
