@@ -1,8 +1,6 @@
 package validator
 
 import (
-	"log"
-
 	"github.com/go-errors/errors"
 
 	"os/exec"
@@ -18,11 +16,7 @@ import (
 	"github.com/sthorne/reflections"
 )
 
-var l *log.Logger = nil
-
-func init() {
-	l = logger.InitLogger(&logger.LogParams{LogPrefix: "[VAL] "})
-}
+var l = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[VAL] "})
 
 type (
 	validationFunc func(f *models.File) (passed bool, err error)
@@ -61,34 +55,32 @@ func checkExif(f *models.File) (passed bool, err error) {
 	f.Save()
 	workflowExif, _ := reflections.Items(f.Workflow.Exif)
 
-	var checkError string = ""
+	var checkError string
 	for fieldName, fieldValue := range workflowExif {
 		if isZeroOfUnderlyingType(fieldValue) {
 			continue
 		}
-		if value, err := reflections.GetField(f.Exif, fieldName); err != nil {
+		var value interface{}
+		if value, err = reflections.GetField(f.Exif, fieldName); err != nil {
 			return false, errors.Errorf("There was an error validating Exif for file %s. Field '%s' doesn't exist:\n %s", f.FullPath, fieldName, err)
-		} else {
-			if value != fieldValue {
-				checkError += fmt.Sprintf("Field '%s' has value '%v', but '%v' was expected\n", fieldName, value, fieldValue)
-			}
+		}
+		if value != fieldValue {
+			checkError += fmt.Sprintf("Field '%s' has value '%v', but '%v' was expected\n", fieldName, value, fieldValue)
 		}
 
 	}
 
 	if checkError != "" {
 		return false, errors.Errorf("There was an error validating Exif for file %s.\n%s", f.FullPath, checkError)
-	} else {
-		return true, nil
 	}
+	return true, nil
+
 }
 
+// RunValidations will run all registeded validations
 var RunValidations = file_manager.HandlerFunc(func(file *models.File) (err error) {
 
 	defer func() {
-		if err != nil {
-			return
-		}
 		if err = file.Save(); err != nil {
 			l.Printf("RunValidations Error: Problem updating file -  %s : %s", file.FileName, err)
 		}
@@ -104,7 +96,6 @@ var RunValidations = file_manager.HandlerFunc(func(file *models.File) (err error
 		}
 		file.ValidationResult[validation] = models.ValidationResult{Passed: passed, ErrorMessage: msg}
 	}
-
 	return
 
 })

@@ -1,8 +1,8 @@
 package models
 
 import (
-	"regexp"
 	"fmt"
+	"regexp"
 	"strings"
 )
 

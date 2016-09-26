@@ -1,23 +1,29 @@
-package: github.com/Bnei-Baruch/mms-file-manager
-import:
-- package: github.com/DavidHuie/gomigrate
-- package: github.com/chuckpreslar/gofer
-- package: github.com/urfave/cli
-- package: github.com/urfave/negroni
-- package: github.com/fzakaria/goav
-  subpackages:
-  - avformat
-- package: github.com/gorilla/mux
-- package: github.com/gorilla/schema
-- package: github.com/jinzhu/gorm
-- package: github.com/joho/godotenv
-- package: github.com/lib/pq
-- package: github.com/spf13/cobra
-- package: github.com/sthorne/reflections
-- package: github.com/unrolled/render
-- package: github.com/smartystreets/goconvey
-  version: ~1.6.2
-- package: github.com/palantir/stacktrace
-- package: github.com/pressly/goose
-  subpackages:
-  - cmd/goose
+# package
+github.com/Bnei-Baruch/mms-file-manager
+
+github.com/davecgh/go-spew	v1.0.0-3-g6d21280
+github.com/go-errors/errors	a418503
+github.com/gopherjs/gopherjs	05b9d70
+github.com/gorilla/context	v1.1-7-g08b5f42
+github.com/gorilla/mux	v1.1-25-g0a192a1
+github.com/inconshreveable/mousetrap	76626ae
+github.com/jinzhu/gorm	v1.0
+github.com/jinzhu/inflection	74387dc
+github.com/joho/godotenv	v1-10-g4ed1339
+github.com/jtolds/gls	v4.2.0
+github.com/lib/pq	go1.0-cutoff-117-g50761b0
+github.com/onsi/ginkgo	v1.2.0-71-g7b6efc7
+github.com/onsi/gomega	v1.0-122-gd59fa0a
+github.com/palantir/stacktrace	5a74c62
+github.com/pmezard/go-difflib	v1.0.0
+github.com/pressly/goose	96680a8
+github.com/smartystreets/assertions	1.6.0-10-g2063fd1
+github.com/smartystreets/goconvey	1.6.2-6-g5db88ed
+github.com/spf13/cobra	9c28e4b
+github.com/spf13/pflag	7b17cc4
+github.com/sthorne/reflections	0.1.2-6-g381162e
+github.com/stretchr/testify	v1.1.3-19-gd77da35
+github.com/unrolled/render	3f49132
+github.com/urfave/negroni	v0.2.0-65-g3f7ce7b
+golang.org/x/sys	30de6d1
+gopkg.in/yaml.v2	e4d366f

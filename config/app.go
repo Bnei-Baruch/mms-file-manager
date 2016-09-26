@@ -2,9 +2,9 @@ package config
 
 import (
 	"github.com/Bnei-Baruch/mms-file-manager/models"
-	"github.com/urfave/negroni"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
+	"github.com/urfave/negroni"
 )
 
 // Struct to hold main variables for this application.
@@ -30,7 +30,7 @@ func NewApp(root string) *App {
 	// Use Render for template. Pass in path to templates folder
 	// as well as asset helper functions.
 	re := render.New(render.Options{
-		IndentJSON:  true,
+		IndentJSON:    true,
 		StreamingJSON: true,
 	})
 

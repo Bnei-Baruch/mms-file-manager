@@ -51,8 +51,7 @@ type File struct {
 }
 
 func (f *File) Load() (err error) {
-	err = db.Where(f).Preload("Workflow").Preload("Pattern").First(f).Error
-	//log.Println(stacktrace.Propagate(err, "KUKU111: %#v\n%s", f, debug.Stack()))
+	err = db.Where("id = ?", f.ID).Preload("Workflow").Preload("Pattern").First(f).Error
 	if err == nil && f.ValidationResult == nil {
 		f.ValidationResult = make(JSONB)
 	}
@@ -84,7 +83,7 @@ func (f *File) FilePath() string {
 }
 
 func (u *Status) Scan(value interface{}) error {
-	asBytes, ok := value.([]byte)
+	asBytes, ok := value.(string)
 	if !ok {
 		return errors.New("Scan source is not []byte")
 	}

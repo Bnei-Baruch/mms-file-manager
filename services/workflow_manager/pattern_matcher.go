@@ -1,4 +1,4 @@
-package workflow_manager
+package wmanager
 
 import (
 	"database/sql"
@@ -7,6 +7,7 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 )
 
+//AttachToPattern function attaches patterns to file
 var AttachToPattern = file_manager.HandlerFunc(func(file *models.File) (err error) {
 	patterns := models.Patterns{}
 	if err = patterns.FindAllByFileMatch(file.FileName); err != nil {

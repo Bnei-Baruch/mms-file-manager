@@ -1,8 +1,6 @@
-hash: 9e32eaf9b87ee46c485125a0d9f5823dbb75e56e7c531d1e2b297126785328e5
-updated: 2016-09-09T05:23:31.110520355+03:00
+hash: 493d7cdd42c12e4f16f5f89d139c5848f4e7cb17e036f3b364125d696aec4909
+updated: 2016-09-12T05:07:19.797322105+03:00
 imports:
-- name: github.com/chuckpreslar/gofer
-  version: a2b42d8f5abd604f382df8c9444a48b4afc6ce0e
 - name: github.com/DavidHuie/gomigrate
   version: 4004e6142040f5d622e9d2be6e833a4652741571
 - name: github.com/fzakaria/goav
@@ -25,10 +23,6 @@ imports:
   version: 74387dc39a75e970e7a3ae6a3386b5bd2e5c5cff
 - name: github.com/joho/godotenv
   version: 4ed13390c0acd2ff4e371e64d8b97c8954138243
-- name: github.com/kylelemons/go-gypsy
-  version: 08cad365cd28a7fba23bb1e57aa43c5e18ad8bb8
-  subpackages:
-  - yaml
 - name: github.com/lib/pq
   version: 50761b0867bd1d9d069276790bcd4a3bccf2324a
   subpackages:
@@ -37,6 +31,10 @@ imports:
   version: 5a74c62b11cfd8b2cb9374c785dd965d9a2b4e53
   subpackages:
   - cleanpath
+- name: github.com/pressly/goose
+  version: 96680a8221416050dcd55bf7b7855973401ea331
+  subpackages:
+  - cmd/goose
 - name: github.com/smartystreets/goconvey
   version: d4c757aa9afd1e2fc1832aaab209b5794eb336e1
   subpackages:
@@ -46,16 +44,20 @@ imports:
 - name: github.com/spf13/cobra
   version: 9c28e4bbd74e5c3ed7aacbc552b2cab7cfdfe744
 - name: github.com/spf13/pflag
-  version: 6fd2ff4ff8dfcdf5556fbdc0ac0284408274b1a7
+  version: 7b17cc4658ef5ca157b986ea5c0b43af7938532b
 - name: github.com/sthorne/reflections
   version: 381162e6b62f31bdcc9981afaf1e24104a593be9
 - name: github.com/unrolled/render
   version: 3f4913244021dede105b62caecfb01f0c1eebeda
 - name: github.com/urfave/cli
-  version: c723b19a84af34d905773672ffa1b8ead802e505
+  version: 86b8c43eaf9af06ec2a4cb367888d885e27651ba
 - name: github.com/urfave/negroni
-  version: 5d815f907a182b6131cc88af3f17f898b93142a5
+  version: 3f7ce7b928e14ff890b067e5bbbc80af73690a9c
 testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
 - name: github.com/gopherjs/gopherjs
   version: 05b9d708f1c9b4cbe71da718f3ce23665031021a
   subpackages:
@@ -80,7 +82,7 @@ testImports:
   - reporters/stenographer
   - types
 - name: github.com/onsi/gomega
-  version: b48c9a8b2644326d0a44eaaacc8d83e35174a05d
+  version: d59fa0ac68bb5dd932ee8d24eed631cdd519efc3
   subpackages:
   - format
   - internal/assertion
@@ -93,11 +95,19 @@ testImports:
   - matchers/support/goraph/node
   - matchers/support/goraph/util
   - types
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
 - name: github.com/smartystreets/assertions
   version: 2063fd1cc7c975db70502811a34b06ad034ccdf2
   subpackages:
   - internal/go-render/render
   - internal/oglematchers
+- name: github.com/stretchr/testify
+  version: d77da356e56a7428ad25149ca77381849a6a5232
+  subpackages:
+  - assert
 - name: golang.org/x/sys
   version: 30de6d19a3bd89a5f38ae4028e23aaa5582648af
   subpackages:

@@ -19,4 +19,3 @@ func (p *PatternPart) FindOneByKey() error {
 func (p *PatternParts) FindAll() error {
 	return db.Find(p).Error
 }
-

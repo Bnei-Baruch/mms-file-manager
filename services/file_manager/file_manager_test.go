@@ -2,7 +2,6 @@ package file_manager_test
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -11,14 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"github.com/Bnei-Baruch/mms-file-manager/models"
 	fm "github.com/Bnei-Baruch/mms-file-manager/services/file_manager"
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
+	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
 	"github.com/Bnei-Baruch/mms-file-manager/utils"
-	"github.com/chuckpreslar/gofer"
 	"github.com/jinzhu/gorm"
-	"github.com/joho/godotenv"
 	"github.com/smartystreets/assertions"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -41,19 +38,23 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	flag.Parse()
-	os.RemoveAll("tmp")
-	// Load test ENV variables
-	godotenv.Load("../../.env.test")
-	db = config.NewDB()
-	models.New(db)
-	if err := gofer.LoadAndPerform("db:empty", "--env=../../.env.test"); err != nil {
-		panic(fmt.Sprintf("Unable to empty database %v", err))
-	}
 
-	if err := gofer.LoadAndPerform("db:migrate", "--env=../../.env.test"); err != nil {
-		panic(fmt.Sprintf("Unable to migrate database %v", err))
-	}
+	db = test_helpers.SetupSpec()
+	/*
+		flag.Parse()
+		os.RemoveAll("tmp")
+		// Load test ENV variables
+		godotenv.Load("../../.env.test")
+		db = config.NewDB()
+		models.New(db)
+		if err := gofer.LoadAndPerform("db:empty", "--env=../../.env.test"); err != nil {
+			panic(fmt.Sprintf("Unable to empty database %v", err))
+		}
+
+		if err := gofer.LoadAndPerform("db:migrate", "--env=../../.env.test"); err != nil {
+			panic(fmt.Sprintf("Unable to migrate database %v", err))
+		}
+	*/
 	os.Exit(m.Run())
 }
 

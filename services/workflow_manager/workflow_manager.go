@@ -1,4 +1,4 @@
-package workflow_manager
+package wmanager
 
 import (
 	"fmt"
@@ -9,12 +9,13 @@ import (
 	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
 )
 
-var l *log.Logger = nil
+var l *log.Logger
 
 func init() {
 	l = logger.InitLogger(&logger.LogParams{LogPrefix: "[WM] "})
 }
 
+//AttachToWorkflow attaches workflow to a file
 var AttachToWorkflow = file_manager.HandlerFunc(func(file *models.File) (err error) {
 
 	defer func() {
@@ -36,7 +37,7 @@ var AttachToWorkflow = file_manager.HandlerFunc(func(file *models.File) (err err
 
 	if len(workflows) == 0 {
 		file.Status = models.HAS_NO_WORKFLOW
-		file.Error = fmt.Sprintf("No workflows matched by entry point %q and pattern %d", file.EntryPoint, file.PatternId)
+		file.Error = fmt.Sprintf("No workflows matched by entry point %q and pattern %v", file.EntryPoint, file.PatternId)
 		l.Println(file.Error)
 		return
 	}

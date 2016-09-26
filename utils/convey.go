@@ -83,4 +83,3 @@ func Eventually(actual interface{}, expected ...interface{}) (res string) {
 	<-done
 	return
 }
-

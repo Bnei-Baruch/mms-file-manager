@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/Bnei-Baruch/mms-file-manager/config"
 	"net/http"
+
+	"github.com/Bnei-Baruch/mms-file-manager/config"
 )
 
 var App *config.App

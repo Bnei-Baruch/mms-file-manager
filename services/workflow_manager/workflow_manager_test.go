@@ -1,21 +1,21 @@
-package workflow_manager_test
+package wmanager_test
 
 import (
-	"log"
 	"testing"
 
-	"github.com/Bnei-Baruch/mms-file-manager/models"
-	"github.com/Bnei-Baruch/mms-file-manager/services/logger"
-	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
-	"github.com/jinzhu/gorm"
-	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
 	"database/sql"
+
+	"github.com/Bnei-Baruch/mms-file-manager/models"
+	wm "github.com/Bnei-Baruch/mms-file-manager/services/workflow_manager"
+	"github.com/Bnei-Baruch/mms-file-manager/test_helpers"
+	"github.com/jinzhu/gorm"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 var (
-	l  *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[WM-TEST] "})
-	db *gorm.DB
+	// l  *log.Logger = logger.InitLogger(&logger.LogParams{LogMode: "screen", LogPrefix: "[WM-TEST] "})
+	db  *gorm.DB
+	err error
 )
 
 func TestWorkflowSpec(t *testing.T) {
@@ -51,7 +51,6 @@ func TestWorkflowSpec(t *testing.T) {
 						},
 						Extension: "mpg",
 					}
-					pattern.Save()
 
 					workflow := &models.Workflow{
 						PatternId:   sql.NullInt64{Int64: pattern.ID, Valid: true},
@@ -59,7 +58,7 @@ func TestWorkflowSpec(t *testing.T) {
 						ContentType: sql.NullString{String: "*", Valid: true},
 						Line:        sql.NullString{String: "*", Valid: true},
 					}
-					err := workflow.Save()
+					err = workflow.Save()
 					So(err, ShouldBeNil)
 
 					file := &models.File{
@@ -71,7 +70,8 @@ func TestWorkflowSpec(t *testing.T) {
 						Status:     models.HAS_PATTERN,
 					}
 
-					file.CreateVersion()
+					err = file.CreateVersion()
+					So(err, ShouldBeNil)
 					err = wm.AttachToWorkflow(file)
 					So(err, ShouldBeNil)
 					So(file.WorkflowId.Int64, ShouldEqual, workflow.ID)
